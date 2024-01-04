@@ -9,6 +9,11 @@
 - Generate ssh key
 - Install some programs (`VSCode`, `Postman`, `OBS Studio`)
 
+## Windows
+
+- Install terminal
+- Install some apps (`TranslucentTB`)
+
 # Usage:
 
 ```bash
@@ -19,6 +24,14 @@ git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
+## Ubuntu
+
 ```bash
 ./install.sh
+```
+
+## Windows
+
+```powershell
+./install.bat
 ```
