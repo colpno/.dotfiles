@@ -1,0 +1,13 @@
+" Hybrid line number
+set relativenumber number
+
+" Turn syntax highlighting on.
+syntax enable
+syntax on
+
+" Indent, spacing
+set tabstop=4
+set autoindent
+
+" Highlight the line at cursor
+set cursorline
