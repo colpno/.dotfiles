@@ -16,12 +16,14 @@ fi
 
 sudo apt update
 
-for dir in $MKDIRS do
+for dir in $MKDIRS
+do
 	sudo mkdir -p $dir
 done
 
 # Install terminal packages
-for package in $TERMINAL_PACKAGES do
+for package in $TERMINAL_PACKAGES
+do
 	if ! dpkg-query -W -f='${Status}' git  | grep "ok installed" > /dev/null; then
 		sudo apt install -y "$package"
 	fi
@@ -49,12 +51,14 @@ fi
 
 ## Install plugins
 cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins
-for plugin in $ZSH_PLUGINS do
+for plugin in $ZSH_PLUGINS
+do
 	git clone --depth=1 $plugin 
 done
 
 cd ${HOME}/.vim/pack/plugins/start
-for plugin in $VIM_PLUGINS do
+for plugin in $VIM_PLUGINS
+do
 	git clone --depth=1 $plugin 
 done
 
@@ -80,7 +84,8 @@ dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list"
 dconf write /org/gnome/terminal/legacy/profiles:/default "'$add_list_id'"
 
 ## Create symlink
-for path in $DOTHOME do
+for path in $DOTHOME
+do
 	filename=$(basename "$path")
 	rm -rf ~/."$filename"
 	ln -s "$DOTFILE_DIR/$path" ~/."$filename"
@@ -131,7 +136,8 @@ while [ $flag -eq 0 ]; do
 done
 
 # Install gnome extensions
-for extension in $GNOME_EXTENSIONS do
+for extension in $GNOME_EXTENSIONS
+do
 	gnome-extensions install $extension
 done
 
