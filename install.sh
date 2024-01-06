@@ -9,7 +9,8 @@ MKDIRS="$HOME/.fonts $HOME/.oh-my-zsh/custom/plugins $HOME/.oh-my-zsh/custom/the
 DOTFILE_DIR="$HOME/.dotfiles"
 
 # Prerequisites
-if [ ! -d $DOTFILE_DIR ]; then
+if [ ! -d $DOTFILE_DIR ];
+then
 	echo "Can' find .dotfiles in home directory"
 	exit
 fi
@@ -24,7 +25,8 @@ done
 # Install terminal packages
 for package in $TERMINAL_PACKAGES
 do
-	if ! dpkg-query -W -f='${Status}' git  | grep "ok installed" > /dev/null; then
+	if ! dpkg-query -W -f='${Status}' git  | grep "ok installed" > /dev/null;
+	then
 		sudo apt install -y "$package"
 	fi
 done
@@ -40,10 +42,12 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # Install fonts
 
 ## Copy fonts to user fonts directory
-find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -print0 | xargs -0 -n1 -I % cp "%" "$USER_FONT_DIR/"
+#find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -print0 | xargs -0 -n1 -I % sudo cp "%" "$USER_FONT_DIR/"
+sudo find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -exec cp {} "$USER_FONT_DIR/" \;
 
 ## Reset font cache
-if which fc-cache >/dev/null 2>&1 ; then
+if which fc-cache >/dev/null 2>&1 ;
+then
     fc-cache -f "$USER_FONT_DIR"
 fi
 
@@ -56,7 +60,7 @@ do
 	git clone --depth=1 $plugin 
 done
 
-cd ${HOME}/.vim/pack/plugins/start
+cd ~/.vim/pack/plugins/start
 for plugin in $VIM_PLUGINS
 do
 	git clone --depth=1 $plugin 
@@ -67,7 +71,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
 
 ## Apply terminal profile config
-dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9 < terminal/profile.dconf
+dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9 < gnome-terminal/profile.dconf
 
 add_list_id=b1dcc9dd-5262-4d8d-a863-c897e6d979b9
 old_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list | tr -d "]")
@@ -130,7 +134,8 @@ while [ $flag -eq 0 ]; do
 	printf "\n"
 	read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
 
-	if [ $opt == "y"]; then
+	if [ $opt == "y"];
+	then
 		flag=1
 	fi
 done
