@@ -17,7 +17,7 @@
 
 
 
-## Installation:
+## Installation
 
 ```bash
 git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
