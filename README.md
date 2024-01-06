@@ -41,6 +41,6 @@ Run `install.bat`
 
 ## Acknowledgments
 
-- [Add custom keybindings] (https://techwiser.com/custom-keyboard-shortcuts-ubuntu/)
-- [ohmyzsh] (https://github.com/ohmyzsh/ohmyzsh)
-- [ohmyposh] (https://ohmyposh.dev/docs)
+- [Add custom keybindings](https://techwiser.com/custom-keyboard-shortcuts-ubuntu/)
+- [ohmyzsh](https://github.com/ohmyzsh/ohmyzsh)
+- [ohmyposh](https://ohmyposh.dev/docs)
