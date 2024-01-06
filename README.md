@@ -1,6 +1,6 @@
-# What's in dotfiles?
+## What's in dotfiles?
 
-## Ubuntu
+### Ubuntu
 
 - Install some packages (`git`, `curl`, `tree`, `python3`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions`)
 - Config terminal profile
@@ -10,14 +10,14 @@
 - Install some programs (`VSCode`, `Postman`, `OBS Studio`)
 - Bind shortcut (`Ctrl + Alt + t`)
 
-## Windows
+### Windows
 
 - Install terminal
 - Install some apps (`TranslucentTB`)
 
 
 
-# Installation:
+## Installation:
 
 ```bash
 git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
@@ -27,19 +27,19 @@ git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
-## Ubuntu
+### Ubuntu
 
 ```bash
 ./install.sh
 ```
 
-## Windows
+### Windows
 
 Run `install.bat`
 
 
 
-# Acknowledgments
+## Acknowledgments
 
 - [Add custom keybindings] (https://techwiser.com/custom-keyboard-shortcuts-ubuntu/)
 - [ohmyzsh] (https://github.com/ohmyzsh/ohmyzsh)
