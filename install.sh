@@ -48,11 +48,11 @@ create_dir_if_not_exist() {
 
 install_fonts() {
 	title "Installing fonts"
+	FONT_DIR="$HOME/.fonts"
 
-	create_dir_if_not_exist "$HOME/.fonts"
+	create_dir_if_not_exist $FONT_DIR
 
-	#find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -print0 | xargs -0 -n1 -I % sudo cp "%" "$USER_FONT_DIR/"
-	sudo find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -exec cp {} "$USER_FONT_DIR/" \;
+	sudo find ./fonts -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_DIR/" \;
 
 	if which fc-cache >/dev/null 2>&1 ;
 	then
@@ -61,38 +61,38 @@ install_fonts() {
 }
 
 setup_profile() {
-	title "Installing ohmyzsh"
+	title "Installing profile"
 
+	info "Installing oh-my-zsh"
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-	title "Installing oh-my-zsh plugins"
-
+	info "Installing oh-my-zsh plugins"
 	cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/plugins}
 	for plugin in $ZSH_PLUGINS
 	do
-		git clone --depth=1 $plugin 
+		info Installing $plugin
+		git clone --depth=1 $plugin
 	done
 
-	title "Installing vim plugins"
-
+	info "Installing vim plugins"
 	create_dir_if_not_exist "$HOME/.vim/pack/plugins/start"
 
 	cd ~/.vim/pack/plugins/start
 	for plugin in $VIM_PLUGINS
 	do
+		info Installing $plugin
 		git clone --depth=1 $plugin 
 	done
 
 	cd $DOTFILES
 
-	title "Installing themes"
-
+	info "Installing themes"
 	create_dir_if_not_exist "$HOME/.vim/pack/themes/start"
 
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/themes/powerlevel10k}
 	git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
 
-	title "Restoring terminal profile"
+	info "Restoring terminal profile"
 
 	dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ < ${DOTFILES}/gnome-terminal/profile.dconf
 
@@ -117,6 +117,8 @@ setup_symlinks() {
 	for path in $DOTHOME
 	do
 		filename=$(basename "$path")
+		info "Creating symlink for $filename"
+
 		rm -rf ~/."$filename"
 		ln -s "$DOTFILES/$path" ~/."$filename"
 	done
@@ -186,6 +188,7 @@ install_gnome_extensions() {
 
 	for extension in $GNOME_EXTENSIONS
 	do
+		info "Installing $extension"
 		gnome-extensions install $extension
 	done
 }
@@ -230,25 +233,25 @@ done
 # Installation
 
 installation_guide() {
-	printf "\n0: Automatically install"
-	printf "\n1: Install fonts"
-	printf "\n2: Set up profile"
-	printf "\n3: Create symlinks"
-	printf "\n4: Install package managers"
-	printf "\n5: Set up git"
-	printf "\n6: Install gnome extensions"
-	printf "\n7: Bind shortcut keys"
-	printf "\n8: Install programs"
-	printf "\n9: Change shell to zsh"
-	printf "\nq: Exit"
+	printf "\n${COLOR_YELLOW}0: ${COLOR_NONE}Automatically install"
+	printf "\n${COLOR_YELLOW}1: ${COLOR_NONE}Install fonts"
+	printf "\n${COLOR_YELLOW}2: ${COLOR_NONE}Set up profile"
+	printf "\n${COLOR_YELLOW}3: ${COLOR_NONE}Create symlinks"
+	printf "\n${COLOR_YELLOW}4: ${COLOR_NONE}Install package managers"
+	printf "\n${COLOR_YELLOW}5: ${COLOR_NONE}Set up git"
+	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Install gnome extensions"
+	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Bind shortcut keys"
+	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Install programs"
+	printf "\n${COLOR_YELLOW}9: ${COLOR_NONE}Change shell to zsh"
+	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
 
-	echo -e "\nType in the option: "
+	echo -ne "\nType in the option: "
 	read opt
 
 	return $opt
 }
 
-opt=installation_guide
+installation_guide
 
 while [ "$opt" != "q" ];
 do
@@ -262,7 +265,6 @@ do
 			install_gnome_extensions
 			bind_key
 			install_program
-			sudo chsh -s $(which zsh)
 			;;
 		1)
 			install_fonts
@@ -291,9 +293,12 @@ do
 		9)
 			sudo chsh -s $(which zsh)
 			;;
+		q)
+			exit 1
+			;;
 	esac
 
-	opt=installation_guide
+	installation_guide
 done
 
 success "Done"
