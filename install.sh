@@ -1,5 +1,5 @@
 #!/bin/bash
-TERMINAL_PACKAGES="git curl tree python3 snapd vim zsh gnome-shell-extensions"
+TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extensions"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 VIM_PLUGINS="https://tpope.io/vim/surround.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx Vitals@CoreCoding.com toggle-night-light@cansozbir.github.io BingWallpaper@ineffable-gmail.com"

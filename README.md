@@ -2,7 +2,7 @@
 
 ### Ubuntu
 
-- Install some packages (`git`, `curl`, `tree`, `python3`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions`)
+- Install some packages (`git`, `curl`, `tree`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions`)
 - Config terminal profile
 - Config vim
 - Install fonts (`Fira Code`, `Source Code Pro`)
