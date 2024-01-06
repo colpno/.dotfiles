@@ -22,7 +22,7 @@ REM Append oh-my-posh theme init to $PROFILE
 echo oh-my-posh init pwsh --config "%current_dir%\powershell\theme.omp.json" ^| Invoke-Expression >> $PROFILE
 
 REM Install TranslucentTB
-winget install TranslucentTB
+winget install TranslucentTB --source msstore
 
 REM Restore Windows Terminal settings
 copy /y /v "%current_dir%\translucentTB\settings.json" "%LocalAppData%\Packages\28017CharlesMilette.TranslucentTB_v826wp6bftszj\RoamingState"
