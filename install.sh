@@ -17,18 +17,10 @@ fi
 
 sudo apt update
 
-for dir in $MKDIRS
-do
-	sudo mkdir -p $dir
-done
-
 # Install terminal packages
 for package in $TERMINAL_PACKAGES
 do
-	if ! dpkg-query -W -f='${Status}' git  | grep "ok installed" > /dev/null;
-	then
-		sudo apt install -y "$package"
-	fi
+	sudo apt install -y "$package"
 done
 
 # Install terminal
@@ -38,6 +30,13 @@ sudo chsh -s $(which zsh)
 
 ## Install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+for dir in $MKDIRS
+do
+	mkdir -p $dir
+	chown -R ${whoami} $dir
+	chgrp -R ${whoami} $dir
+done
 
 # Install fonts
 
@@ -71,7 +70,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
 
 ## Apply terminal profile config
-dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9 < gnome-terminal/profile.dconf
+dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ < ${DOTFILE_DIR}/gnome-terminal/profile.dconf
 
 add_list_id=b1dcc9dd-5262-4d8d-a863-c897e6d979b9
 old_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list | tr -d "]")
@@ -99,7 +98,7 @@ done
 read -p "What package manager do you use? [npm]: " pkgmng
 flag=0
 while [ $flag -eq 0 ]; do
-	case pkgmng in
+	case $pkgmng in
 		npm)
 			curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 			source ~/.zshrc
@@ -126,7 +125,7 @@ ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
 
-printf "SSH key:\n"
+printf "\n\nSSH key:\n"
 cat ~/.ssh/id_ed25519.pub
 
 flag=0
@@ -134,7 +133,7 @@ while [ $flag -eq 0 ]; do
 	printf "\n"
 	read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
 
-	if [ $opt == "y"];
+	if [[ $opt == "y" ]];
 	then
 		flag=1
 	fi
