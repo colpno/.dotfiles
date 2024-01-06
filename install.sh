@@ -23,6 +23,7 @@ do
 	sudo apt install -y "$package"
 done
 
+terminal() {
 # Install terminal
 
 ## Change shell to zsh
@@ -37,7 +38,9 @@ do
 	chown -R ${whoami} $dir
 	chgrp -R ${whoami} $dir
 done
+}
 
+fonts() {
 # Install fonts
 
 ## Copy fonts to user fonts directory
@@ -49,7 +52,9 @@ if which fc-cache >/dev/null 2>&1 ;
 then
     fc-cache -f "$USER_FONT_DIR"
 fi
+}
 
+profile() {
 # Install profile
 
 ## Install plugins
@@ -85,7 +90,9 @@ fi
 new_list="$front_list'$add_list_id']"
 dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list" 
 dconf write /org/gnome/terminal/legacy/profiles:/default "'$add_list_id'"
+}
 
+symlink() {
 ## Create symlink
 for path in $DOTHOME
 do
@@ -93,7 +100,9 @@ do
 	rm -rf ~/."$filename"
 	ln -s "$DOTFILE_DIR/$path" ~/."$filename"
 done
+}
 
+pkg_manager() {
 # Install package manager
 read -p "What package manager do you use? [npm]: " pkgmng
 flag=0
@@ -119,7 +128,9 @@ while [ $flag -eq 0 ]; do
 			;;
 	esac
 done
+}
 
+git() {
 # Generate SSH Key
 ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
 eval "$(ssh-agent -s)"
@@ -138,13 +149,17 @@ while [ $flag -eq 0 ]; do
 		flag=1
 	fi
 done
+}
 
+gnome_extension() {
 # Install gnome extensions
 for extension in $GNOME_EXTENSIONS
 do
 	gnome-extensions install $extension
 done
+}
 
+key_bonding() {
 # Add key bindings
 
 ## Create key binding list
@@ -154,7 +169,9 @@ gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "[
 gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name "'Launch terminal'"
 gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding "'gnome-terminal --maximize'"
 gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command "'<Primary><Alt>t'"
+}
 
+program() {
 # Install programs
 
 ## VSCode
@@ -166,6 +183,41 @@ sudo apt install obs-studio
 
 ## Postman
 sudo snap install postman
+}
 
+case "$1" in
+terminal)
+terminal
+;;
+profile)
+profile
+;;
+fonts)
+fonts
+;;
+symlink)
+symlink
+;;
+pkg_manaer)
+pkg_manaer
+;;
+git)
+git
+;;
+gnome_extension)
+gnome_extension
+;;
+key_binding)
+key_binding
+;;
+program)
+program
+;;
+restart_shell)
 # Restart shell
 exec zsh
+;;
+*)
+;;
+echo -e $"\nUsage: $(basename "$0") {terminal|profile|fonts||symlink|package_manager|ssh_key|gnome_extensions|key_bindings|programs|restart_shell}\n"
+exit 1
