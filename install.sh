@@ -5,219 +5,295 @@ VIM_PLUGINS="https://tpope.io/vim/surround.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx Vitals@CoreCoding.com toggle-night-light@cansozbir.github.io BingWallpaper@ineffable-gmail.com"
 
 DOTHOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
-MKDIRS="$HOME/.fonts $HOME/.oh-my-zsh/custom/plugins $HOME/.oh-my-zsh/custom/themes $HOME/.vim/pack/plugins/start $HOME/.vim/pack/theme/start"
-DOTFILE_DIR="$HOME/.dotfiles"
+DOTFILES="$(pwd)"
+
+COLOR_GRAY="\033[1;38;5;243m"
+COLOR_BLUE="\033[1;34m"
+COLOR_GREEN="\033[1;32m"
+COLOR_RED="\033[1;31m"
+COLOR_PURPLE="\033[1;35m"
+COLOR_YELLOW="\033[1;33m"
+COLOR_NONE="\033[0m"
+
+title() {
+    echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
+    echo -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
+}
+
+error() {
+    echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
+    exit 1
+}
+
+warning() {
+    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
+}
+
+info() {
+    echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
+}
+
+success() {
+    echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
+}
+
+create_dir_if_not_exist() {
+	if [ ! -d "$1" ]; then
+		info "Creating folder $1"
+		mkdir -p "$1"
+	else
+		warning "Folder is exist: $1"
+	fi
+}
+
+install_fonts() {
+	title "Installing fonts"
+
+	create_dir_if_not_exist "$HOME/.fonts"
+
+	#find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -print0 | xargs -0 -n1 -I % sudo cp "%" "$USER_FONT_DIR/"
+	sudo find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -exec cp {} "$USER_FONT_DIR/" \;
+
+	if which fc-cache >/dev/null 2>&1 ;
+	then
+		fc-cache -f "$USER_FONT_DIR"
+	fi
+}
+
+setup_profile() {
+	title "Installing ohmyzsh"
+
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+	title "Installing oh-my-zsh plugins"
+
+	cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/plugins}
+	for plugin in $ZSH_PLUGINS
+	do
+		git clone --depth=1 $plugin 
+	done
+
+	title "Installing vim plugins"
+
+	create_dir_if_not_exist "$HOME/.vim/pack/plugins/start"
+
+	cd ~/.vim/pack/plugins/start
+	for plugin in $VIM_PLUGINS
+	do
+		git clone --depth=1 $plugin 
+	done
+
+	cd $DOTFILES
+
+	title "Installing themes"
+
+	create_dir_if_not_exist "$HOME/.vim/pack/themes/start"
+
+	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/themes/powerlevel10k}
+	git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
+
+	title "Restoring terminal profile"
+
+	dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ < ${DOTFILES}/gnome-terminal/profile.dconf
+
+	add_list_id=b1dcc9dd-5262-4d8d-a863-c897e6d979b9
+	old_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list | tr -d "]")
+
+	if [ -z "$old_list" ]
+	then
+		front_list="["
+	else
+		front_list="$old_list, "
+	fi
+
+	new_list="$front_list'$add_list_id']"
+	dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list" 
+	dconf write /org/gnome/terminal/legacy/profiles:/default "'$add_list_id'"
+}
+
+setup_symlinks() {
+	title "Creating symlinks"
+
+	for path in $DOTHOME
+	do
+		filename=$(basename "$path")
+		rm -rf ~/."$filename"
+		ln -s "$DOTFILES/$path" ~/."$filename"
+	done
+}
+
+setup_package_manager() {
+	title "Installing package managers"
+
+	flag=0
+	read -p "What package manager do you use? [npm]: " pkgmng
+
+	while [ $flag -eq 0 ];
+	do
+		case $pkgmng in
+			npm)
+				info "Installing nvm"
+				curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+				source ~/.zshrc
+
+				info "Installing npm"
+				is_continue="y"
+				while [ "$is_continue" == "y" ];
+				do
+					nvm ls
+					printf "\n"
+					read -p "Type in the version of npm [--lts/version]: " npm_version
+
+					nvm install $npm_version
+
+					read -p "Another version? [y/n]: " is_continue
+				done
+
+				flag=1
+				;;
+			*)
+				warning "$pkgmng is not listed"
+				read -p "What package manager do you use? [npm]: " pkgmng
+				;;
+		esac
+	done
+}
+
+setup_git() {
+	title "Creating github ssh key"
+
+	ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
+	eval "$(ssh-agent -s)"
+	ssh-add ~/.ssh/id_ed25519
+
+	info "SSH key: "
+	cat ~/.ssh/id_ed25519.pub
+
+	flag=0
+	while [ $flag -eq 0 ]; do
+		printf "\n"
+		read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
+
+		if [[ $opt == "y" ]];
+		then
+			flag=1
+		fi
+	done
+}
+
+install_gnome_extensions() {
+	title "Installing gnome extensions"
+
+	for extension in $GNOME_EXTENSIONS
+	do
+		gnome-extensions install $extension
+	done
+}
+
+bind_key() {
+	title "Binding shortcut key"
+
+	# Create key binding list
+	gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
+
+	# Bind key
+	gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name "'Launch terminal'"
+	gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding "'gnome-terminal --maximize'"
+	gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command "'<Primary><Alt>t'"
+}
+
+install_program() {
+	title "Installing programs"
+
+	info "Installing VS Code"
+	sudo snap install --classic code
+
+	info "Installing OBS Studio"
+	sudo add-apt-repository ppa:obsproject/obs-studio
+	sudo apt install -y obs-studio
+
+	info "Installing Postman"
+	sudo snap install postman
+}
 
 # Prerequisites
-if [ ! -d $DOTFILE_DIR ];
-then
-	echo "Can' find .dotfiles in home directory"
-	exit
-fi
 
+info "Updating apt repository"
 sudo apt update
 
-# Install terminal packages
 for package in $TERMINAL_PACKAGES
 do
+	info "Installing $package"
 	sudo apt install -y "$package"
 done
 
-terminal() {
-# Install terminal
+# Installation
 
-## Change shell to zsh
-sudo chsh -s $(which zsh)
+installation_guide() {
+	printf "\n0: Automatically install"
+	printf "\n1: Install fonts"
+	printf "\n2: Set up profile"
+	printf "\n3: Create symlinks"
+	printf "\n4: Install package managers"
+	printf "\n5: Set up git"
+	printf "\n6: Install gnome extensions"
+	printf "\n7: Bind shortcut keys"
+	printf "\n8: Install programs"
+	printf "\n9: Change shell to zsh"
+	printf "\nq: Exit"
 
-## Install oh-my-zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	echo -e "\nType in the option: "
+	read opt
 
-for dir in $MKDIRS
-do
-	mkdir -p $dir
-	chown -R ${whoami} $dir
-	chgrp -R ${whoami} $dir
-done
+	return $opt
 }
 
-fonts() {
-# Install fonts
+opt=installation_guide
 
-## Copy fonts to user fonts directory
-#find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -print0 | xargs -0 -n1 -I % sudo cp "%" "$USER_FONT_DIR/"
-sudo find 'fonts' \( -name "*.[ot]tf" -or -name "*.pcf.gz" \) -type f -exec cp {} "$USER_FONT_DIR/" \;
-
-## Reset font cache
-if which fc-cache >/dev/null 2>&1 ;
-then
-    fc-cache -f "$USER_FONT_DIR"
-fi
-}
-
-profile() {
-# Install profile
-
-## Install plugins
-cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins
-for plugin in $ZSH_PLUGINS
+while [ "$opt" != "q" ];
 do
-	git clone --depth=1 $plugin 
-done
-
-cd ~/.vim/pack/plugins/start
-for plugin in $VIM_PLUGINS
-do
-	git clone --depth=1 $plugin 
-done
-
-## Install themes
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
-
-## Apply terminal profile config
-dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ < ${DOTFILE_DIR}/gnome-terminal/profile.dconf
-
-add_list_id=b1dcc9dd-5262-4d8d-a863-c897e6d979b9
-old_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list | tr -d "]")
-
-if [ -z "$old_list" ]
-then
-	front_list="["
-else
-	front_list="$old_list, "
-fi
-
-new_list="$front_list'$add_list_id']"
-dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list" 
-dconf write /org/gnome/terminal/legacy/profiles:/default "'$add_list_id'"
-}
-
-symlink() {
-## Create symlink
-for path in $DOTHOME
-do
-	filename=$(basename "$path")
-	rm -rf ~/."$filename"
-	ln -s "$DOTFILE_DIR/$path" ~/."$filename"
-done
-}
-
-pkg_manager() {
-# Install package manager
-read -p "What package manager do you use? [npm]: " pkgmng
-flag=0
-while [ $flag -eq 0 ]; do
-	case $pkgmng in
-		npm)
-			curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-			source ~/.zshrc
-
-			nvm ls
-			is_continue="y"
-			printf "\n"
-			while [ "$is_continue" == "y" ]; do
-				read -p "Type in the version of npm [--lts/version]: " npm_version
-				nvm install $npm_version
-				read -p "Continue? [y/n]: " is_continue
-			done
-
-			flag=1
+	case "$opt" in
+		0)
+			install_fonts
+			setup_profile
+			setup_symlinks
+			setup_package_manager
+			setup_git
+			install_gnome_extensions
+			bind_key
+			install_program
+			sudo chsh -s $(which zsh)
 			;;
-		*)
-			read -p "What package manager do you use? [npm]: " pkgmng
+		1)
+			install_fonts
+			;;
+		2)
+			setup_profile
+			;;
+		3)
+			setup_symlinks
+			;;
+		4)
+			setup_package_manager
+			;;
+		5)
+			setup_git
+			;;
+		6)
+			install_gnome_extensions
+			;;
+		7)
+			bind_key
+			;;
+		8)
+			install_program
+			;;
+		9)
+			sudo chsh -s $(which zsh)
 			;;
 	esac
+
+	opt=installation_guide
 done
-}
 
-git() {
-# Generate SSH Key
-ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
-
-printf "\n\nSSH key:\n"
-cat ~/.ssh/id_ed25519.pub
-
-flag=0
-while [ $flag -eq 0 ]; do
-	printf "\n"
-	read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
-
-	if [[ $opt == "y" ]];
-	then
-		flag=1
-	fi
-done
-}
-
-gnome_extension() {
-# Install gnome extensions
-for extension in $GNOME_EXTENSIONS
-do
-	gnome-extensions install $extension
-done
-}
-
-key_bonding() {
-# Add key bindings
-
-## Create key binding list
-gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
-
-## Bind key
-gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name "'Launch terminal'"
-gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding "'gnome-terminal --maximize'"
-gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command "'<Primary><Alt>t'"
-}
-
-program() {
-# Install programs
-
-## VSCode
-sudo snap install --classic code
-
-## OBS Studio
-sudo add-apt-repository ppa:obsproject/obs-studio
-sudo apt install obs-studio
-
-## Postman
-sudo snap install postman
-}
-
-case "$1" in
-terminal)
-terminal
-;;
-profile)
-profile
-;;
-fonts)
-fonts
-;;
-symlink)
-symlink
-;;
-pkg_manaer)
-pkg_manaer
-;;
-git)
-git
-;;
-gnome_extension)
-gnome_extension
-;;
-key_binding)
-key_binding
-;;
-program)
-program
-;;
-restart_shell)
-# Restart shell
-exec zsh
-;;
-*)
-;;
-echo -e $"\nUsage: $(basename "$0") {terminal|profile|fonts||symlink|package_manager|ssh_key|gnome_extensions|key_bindings|programs|restart_shell}\n"
-exit 1
+success "Done"
