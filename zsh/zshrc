@@ -79,7 +79,9 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
 	git
-	autojump
+	sudo
+	z
+	web-search
 	zsh-autocomplete
 	zsh-autosuggestions
 	zsh-syntax-highlighting
@@ -119,12 +121,8 @@ source $ZSH/oh-my-zsh.sh
 # Folder color
 LS_COLORS=$LS_COLORS:'di=0;93:' ; export LS_COLORS
 
-source ./alias.zsh
-
-if [ ! -d ~/Workspace ]; then
-	mkdir ~/Workspace
-fi
-cd ~/Workspace
+DORFILE_DIR="$HOME/.dotfiles"
+source "$DORFILE_DIR/zsh/alias.zsh"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
