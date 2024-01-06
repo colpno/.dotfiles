@@ -1,12 +1,12 @@
 #!/bin/bash
 TERMINAL_PACKAGES="git curl tree python3 snapd vim zsh gnome-shell-extensions"
-ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git https://github.com/wting/autojump.git"
+ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 VIM_PLUGINS="https://tpope.io/vim/surround.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx Vitals@CoreCoding.com toggle-night-light@cansozbir.github.io BingWallpaper@ineffable-gmail.com"
 
 DOTHOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
-MKDIRS="~/.fonts ~/.oh-my-zsh/custom/plugins ~/.oh-my-zsh/custom/themes ~/.vim/pack/plugins/start ~/.vim/pack/theme/start"
-DOTFILE_DIR="~/.dotfiles"
+MKDIRS="$HOME/.fonts $HOME/.oh-my-zsh/custom/plugins $HOME/.oh-my-zsh/custom/themes $HOME/.vim/pack/plugins/start $HOME/.vim/pack/theme/start"
+DOTFILE_DIR="$HOME/.dotfiles"
 
 # Prerequisites
 if [ ! -d $DOTFILE_DIR ]; then
@@ -49,15 +49,11 @@ fi
 
 ## Install plugins
 cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins
-
 for plugin in $ZSH_PLUGINS do
 	git clone --depth=1 $plugin 
 done
 
-${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/autojump/install.py
-
-cd ~/.vim/pack/plugins/start
-
+cd ${HOME}/.vim/pack/plugins/start
 for plugin in $VIM_PLUGINS do
 	git clone --depth=1 $plugin 
 done
@@ -138,6 +134,16 @@ done
 for extension in $GNOME_EXTENSIONS do
 	gnome-extensions install $extension
 done
+
+# Add key bindings
+
+## Create key binding list
+gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
+
+## Bind key
+gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name "'Launch terminal'"
+gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding "'gnome-terminal --maximize'"
+gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command "'<Primary><Alt>t'"
 
 # Install programs
 
