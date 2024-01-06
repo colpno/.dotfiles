@@ -48,9 +48,7 @@ create_dir_if_not_exist() {
 
 install_fonts() {
 	title "Installing fonts"
-	FONT_DIR="$HOME/.fonts"
-
-	create_dir_if_not_exist $FONT_DIR
+	FONT_DIR="/usr/share/fonts"
 
 	sudo find ./fonts -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_DIR/" \;
 
@@ -64,7 +62,7 @@ setup_profile() {
 	title "Installing profile"
 
 	info "Installing oh-my-zsh"
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 
 	info "Installing oh-my-zsh plugins"
 	cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/plugins}
