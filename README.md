@@ -15,6 +15,8 @@
 - Install terminal
 - Install some apps (`TranslucentTB`)
 
+
+
 # Installation:
 
 ```bash
@@ -34,6 +36,8 @@ cd ~/.dotfiles
 ## Windows
 
 Run `install.bat`
+
+
 
 # Acknowledgments
 
