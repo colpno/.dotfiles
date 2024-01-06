@@ -1,72 +1,29 @@
 #!/bin/bash
-TERMINAL_PACKAGES="git curl tree python3 snapd vim zsh"
+TERMINAL_PACKAGES="git curl tree python3 snapd vim zsh gnome-shell-extensions"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git https://github.com/wting/autojump.git"
 VIM_PLUGINS="https://tpope.io/vim/surround.git"
-DOTHOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
-DIRS="~/.fonts ~/.oh-my-zsh/custom/plugins ~/.oh-my-zsh/custom/themes ~/.vim/pack/plugins/start ~/.vim/pack/theme/start"
+GNOME_EXTENSIONS="blur-my-shell@aunetx Vitals@CoreCoding.com toggle-night-light@cansozbir.github.io BingWallpaper@ineffable-gmail.com"
 
+DOTHOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
+MKDIRS="~/.fonts ~/.oh-my-zsh/custom/plugins ~/.oh-my-zsh/custom/themes ~/.vim/pack/plugins/start ~/.vim/pack/theme/start"
 DOTFILE_DIR="~/.dotfiles"
 
 # Prerequisites
 if [ ! -d $DOTFILE_DIR ]; then
-	echo "$DOTFILE_DIR doesn't exist. Use this command: git clone https://github.com/colpno/.dotfiles.git $DOTFILE_DIR"
+	echo "Can' find .dotfiles in home directory"
 	exit
 fi
 
 sudo apt update
 
-for $dir_path in DIRS do
-	sudo mkdir -p $dir_path
+for dir in $MKDIRS do
+	sudo mkdir -p $dir
 done
 
 # Install terminal packages
 for package in $TERMINAL_PACKAGES do
 	if ! dpkg-query -W -f='${Status}' git  | grep "ok installed" > /dev/null; then
 		sudo apt install -y "$package"
-	fi
-done
-
-# Install package manager
-read -p "What package manager do you use? [npm]: " pkgmng
-flag=0
-while [ $flag -eq 0 ]; do
-	case pkgmng in
-		npm)
-			curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-			source ~/.zshrc
-
-			printf "\n"
-			nvm ls
-			is_continue="y"
-			while [ "$is_continue" == "y" ]; do
-				read -p "Type in the version of npm [--lts/version]: " npm_version
-				nvm install $npm_version
-				read -p "Continue? [y/n]: " is_continue
-			done
-
-			flag=1
-			;;
-		*)
-			read -p "What package manager do you use? [npm]: " pkgmng
-			;;
-	esac
-done
-
-# Generate SSH Key
-ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519
-
-printf "SSH key:\n"
-cat ~/.ssh/id_ed25519.pub
-
-flag=0
-while [ $flag -eq 0 ]; do
-	printf "\n"
-	read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
-
-	if [ $opt == "y"]; then
-		flag=1
 	fi
 done
 
@@ -126,11 +83,60 @@ new_list="$front_list'$add_list_id']"
 dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list" 
 dconf write /org/gnome/terminal/legacy/profiles:/default "'$add_list_id'"
 
-# Create symlink
+## Create symlink
 for path in $DOTHOME do
 	filename=$(basename "$path")
 	rm -rf ~/."$filename"
 	ln -s "$DOTFILE_DIR/$path" ~/."$filename"
+done
+
+# Install package manager
+read -p "What package manager do you use? [npm]: " pkgmng
+flag=0
+while [ $flag -eq 0 ]; do
+	case pkgmng in
+		npm)
+			curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+			source ~/.zshrc
+
+			nvm ls
+			is_continue="y"
+			printf "\n"
+			while [ "$is_continue" == "y" ]; do
+				read -p "Type in the version of npm [--lts/version]: " npm_version
+				nvm install $npm_version
+				read -p "Continue? [y/n]: " is_continue
+			done
+
+			flag=1
+			;;
+		*)
+			read -p "What package manager do you use? [npm]: " pkgmng
+			;;
+	esac
+done
+
+# Generate SSH Key
+ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+
+printf "SSH key:\n"
+cat ~/.ssh/id_ed25519.pub
+
+flag=0
+while [ $flag -eq 0 ]; do
+	printf "\n"
+	read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
+
+	if [ $opt == "y"]; then
+		flag=1
+	fi
+done
+
+# Install gnome extensions
+for extension in $GNOME_EXTENSIONS do
+	gnome-extensions install $extension
 done
 
 # Install programs
