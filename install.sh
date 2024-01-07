@@ -276,7 +276,7 @@ do
 					setup_profile
 
 					chsh -s /usr/bin/zsh
-					zsh
+					exac zsh
 					;;
 				1)
 					install_fonts
@@ -304,7 +304,7 @@ do
 					;;
 				9)
 					chsh -s /usr/bin/zsh
-					zsh
+					exac zsh
 					;;
        	 			*)
             				echo "Invalid option"
