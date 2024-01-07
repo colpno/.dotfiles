@@ -136,7 +136,6 @@ setup_package_manager() {
 			npm)
 				info "Installing nvm"
 				curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-				source ~/.zshrc
 
 				info "Installing npm"
 				is_continue="y"
@@ -196,6 +195,8 @@ install_gnome_extensions() {
 bind_key() {
 	title "Binding shortcut key"
 
+	gsettings set org.gnome.settings-daemon.plugins.media-keys terminal []
+
 	# Create key binding list
 	gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
 
@@ -220,7 +221,7 @@ install_program() {
 }
 
 install_pip_pkg() {
-	title "Installing packages via pip"
+	title "Installing pip packages"
 
 
 	for package in $PIP_PACKAGES
@@ -230,16 +231,23 @@ install_pip_pkg() {
 	done
 }
 
-# Prerequisites
+install_terminal_pkg() {
+	title "Installing terminal packages"
 
-info "Updating apt repository"
+	for package in $TERMINAL_PACKAGES
+	do
+		info "Installing $package"
+		sudo apt install -y "$package"
+	done
+}
+
+# Prerequisites
+title "Updating apt repository"
 sudo apt update
 
-for package in $TERMINAL_PACKAGES
-do
-	info "Installing $package"
-	sudo apt install -y "$package"
-done
+install_terminal_pkg
+
+install_pip_pkg
 
 # Installation
 
@@ -266,46 +274,52 @@ installation_guide
 while [ "$opt" != "q" ];
 do
 	case "$opt" in
-		0)
-			install_fonts
-			setup_profile
-			setup_symlinks
-			setup_package_manager
-			setup_git
-			install_gnome_extensions
-			bind_key
-			install_program
-
-			sudo chsh -s $(which zsh)
-			zsh
-			;;
-		1)
-			install_fonts
-			;;
-		2)
-			setup_profile
-			;;
-		3)
-			setup_symlinks
-			;;
-		4)
-			setup_package_manager
-			;;
-		5)
-			setup_git
-			;;
-		6)
-			install_gnome_extensions
-			;;
-		7)
-			bind_key
-			;;
-		8)
-			install_program
-			;;
-		q)
-			exit 1
-			;;
+		[0-9]*)
+            		case "$opt" in
+				0)
+					install_fonts
+					setup_symlinks
+					setup_package_manager
+					setup_git
+					install_gnome_extensions
+					bind_key
+					install_program
+					setup_profile
+					;;
+				1)
+					install_fonts
+					;;
+				2)
+					setup_profile
+					;;
+				3)
+					setup_symlinks
+					;;
+				4)
+					setup_package_manager
+					;;
+				5)
+					setup_git
+					;;
+				6)
+					install_gnome_extensions
+					;;
+				7)
+					bind_key
+					;;
+				8)
+					install_program
+					;;
+       		     	;;
+       	 	[A-Za-z]*)
+       	     		case "$opt" in
+				q)
+					exit 1
+					;;
+       	     		;;
+       	 	*)
+            		echo "Invalid option"
+            		;;
 	esac
 
 	installation_guide
