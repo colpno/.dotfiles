@@ -233,7 +233,7 @@ title "Updating apt repository"
 sudo apt update
 
 install_terminal_pkg
-
+setup_symlinks
 install_pip_pkg
 
 # Installation
@@ -266,7 +266,6 @@ do
             		case "$opt" in
 				0)
 					install_fonts
-					setup_symlinks
 					setup_package_manager
 					setup_git
 					install_gnome_extensions
