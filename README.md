@@ -36,11 +36,7 @@ git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
 ```
 
 ```bash
-cd ~/.dotfiles
-```
-
-```bash
-./install.sh
+cd ~/.dotfiles && ./install.sh
 ```
 
 After the installation, do the following:
