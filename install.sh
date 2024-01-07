@@ -64,7 +64,7 @@ setup_profile() {
 	title "Installing profile"
 
 	info "Installing oh-my-zsh"
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --skip-chsh --keep-zshrc
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 
 	info "Installing oh-my-zsh plugins"
 	cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/plugins}
