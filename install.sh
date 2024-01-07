@@ -121,6 +121,7 @@ setup_package_manager() {
 			npm)
 				info "Installing nvm"
 				curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+				source ~/.zshrc
 
 				info "Installing npm"
 				is_continue="y"
@@ -214,7 +215,7 @@ install_pip_pkg() {
 	for package in $PIP_PACKAGES
 	do
 		info "Installing $package"
-		pip3 install $package
+		pip3 install --upgrade "$package"
 	done
 }
 
@@ -253,8 +254,6 @@ installation_guide() {
 
 	echo -ne "\nType in the option: "
 	read opt
-
-	return $opt
 }
 
 installation_guide
@@ -274,7 +273,7 @@ do
 					setup_profile
 
 					chsh -s /usr/bin/zsh
-					exac zsh
+					zsh
 					;;
 				1)
 					install_fonts
@@ -302,7 +301,7 @@ do
 					;;
 				9)
 					chsh -s /usr/bin/zsh
-					exac zsh
+					zsh
 					;;
        	 			*)
             				echo "Invalid option"
