@@ -1,5 +1,6 @@
 #!/bin/bash
-TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extensions"
+TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager "
+PIP_PACKAGES="gnome-extensions-cli"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 VIM_PLUGINS="https://tpope.io/vim/surround.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx Vitals@CoreCoding.com toggle-night-light@cansozbir.github.io BingWallpaper@ineffable-gmail.com"
@@ -40,7 +41,7 @@ success() {
 create_dir_if_not_exist() {
 	if [ ! -d "$1" ]; then
 		info "Creating folder $1"
-		mkdir -p "$1"
+		mkdir -pv "$1"
 	else
 		warning "Folder is exist: $1"
 	fi
@@ -54,7 +55,8 @@ install_fonts() {
 
 	if which fc-cache >/dev/null 2>&1 ;
 	then
-		fc-cache -f "$USER_FONT_DIR"
+		fc-cache -fv "$USER_FONT_DIR"
+		source /etc/profile
 	fi
 }
 
@@ -62,13 +64,13 @@ setup_profile() {
 	title "Installing profile"
 
 	info "Installing oh-my-zsh"
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --skip-chsh --keep-zshrc
 
 	info "Installing oh-my-zsh plugins"
 	cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/plugins}
 	for plugin in $ZSH_PLUGINS
 	do
-		info Installing $plugin
+		info "Installing $plugin"
 		git clone --depth=1 $plugin
 	done
 
@@ -78,7 +80,7 @@ setup_profile() {
 	cd ~/.vim/pack/plugins/start
 	for plugin in $VIM_PLUGINS
 	do
-		info Installing $plugin
+		info "Installing $plugin"
 		git clone --depth=1 $plugin 
 	done
 
@@ -118,7 +120,7 @@ setup_symlinks() {
 		info "Creating symlink for $filename"
 
 		rm -rf ~/."$filename"
-		ln -s "$DOTFILES/$path" ~/."$filename"
+		ln -sv "$DOTFILES/$path" ~/."$filename"
 	done
 }
 
@@ -187,7 +189,7 @@ install_gnome_extensions() {
 	for extension in $GNOME_EXTENSIONS
 	do
 		info "Installing $extension"
-		gnome-extensions install $extension
+		gext install $extension
 	done
 }
 
@@ -217,6 +219,17 @@ install_program() {
 	sudo snap install postman
 }
 
+install_pip_pkg() {
+	title "Installing packages via pip"
+
+
+	for package in $PIP_PACKAGES
+	do
+		info "Installing $package"
+		pip3 install $package
+	done
+}
+
 # Prerequisites
 
 info "Updating apt repository"
@@ -240,7 +253,6 @@ installation_guide() {
 	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Install gnome extensions"
 	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Bind shortcut keys"
 	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Install programs"
-	printf "\n${COLOR_YELLOW}9: ${COLOR_NONE}Change shell to zsh"
 	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
 
 	echo -ne "\nType in the option: "
@@ -263,6 +275,9 @@ do
 			install_gnome_extensions
 			bind_key
 			install_program
+
+			sudo chsh -s $(which zsh)
+			zsh
 			;;
 		1)
 			install_fonts
@@ -287,9 +302,6 @@ do
 			;;
 		8)
 			install_program
-			;;
-		9)
-			sudo chsh -s $(which zsh)
 			;;
 		q)
 			exit 1
