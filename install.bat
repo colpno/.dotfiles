@@ -24,5 +24,5 @@ echo oh-my-posh init pwsh --config "%current_dir%\powershell\theme.omp.json" ^| 
 REM Install TranslucentTB
 winget install TranslucentTB --source msstore
 
-REM Restore Windows Terminal settings
+REM Restore TranslucentTB settings
 copy /y /v "%current_dir%\translucentTB\settings.json" "%LocalAppData%\Packages\28017CharlesMilette.TranslucentTB_v826wp6bftszj\RoamingState"
