@@ -93,22 +93,7 @@ setup_profile() {
 	git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
 
 	info "Restoring terminal profile"
-
-	dconf load /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ < ${DOTFILES}/gnome-terminal/profile.dconf
-
-	add_list_id=b1dcc9dd-5262-4d8d-a863-c897e6d979b9
-	old_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list | tr -d "]")
-
-	if [ -z "$old_list" ]
-	then
-		front_list="["
-	else
-		front_list="$old_list, "
-	fi
-
-	new_list="$front_list'$add_list_id']"
-	dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list" 
-	dconf write /org/gnome/terminal/legacy/profiles:/default "'$add_list_id'"
+	dconf load /org/gnome/terminal/legacy/profiles:/ < ${DOTFILES}/gnome-terminal/profile.dconf
 }
 
 setup_symlinks() {

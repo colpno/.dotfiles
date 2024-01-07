@@ -1,12 +1,4 @@
-[legacy]
-mnemonics-enabled=false
-new-terminal-mode='tab'
-
-[legacy/keybindings]
-next-tab='<Primary>Tab'
-prev-tab='<Primary><Shift>Tab'
-
-[legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
+[:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
 background-color='rgb(44,44,44)'
 background-transparency-percent=8
 cell-width-scale=1.0
@@ -18,4 +10,4 @@ use-system-font=false
 use-theme-colors=false
 use-theme-transparency=false
 use-transparent-background=true
-visible-name='My Profile'
+visible-name='Default'
