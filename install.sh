@@ -207,17 +207,20 @@ bind_key() {
 }
 
 install_program() {
-	title "Installing programs"
+	read -p "Do you want to install the programs? [y/n]: " opt
+	if [[ "$opt" == "y" ]]; then
+		title "Installing programs"
 
-	info "Installing VS Code"
-	sudo snap install --classic code
+		info "Installing VS Code"
+		sudo snap install --classic code
 
-	info "Installing OBS Studio"
-	sudo add-apt-repository ppa:obsproject/obs-studio
-	sudo apt install -y obs-studio
+		info "Installing OBS Studio"
+		sudo add-apt-repository ppa:obsproject/obs-studio
+		sudo apt install -y obs-studio
 
-	info "Installing Postman"
-	sudo snap install postman
+		info "Installing Postman"
+		sudo snap install postman
+	fi
 }
 
 install_pip_pkg() {
@@ -261,6 +264,7 @@ installation_guide() {
 	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Install gnome extensions"
 	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Bind shortcut keys"
 	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Install programs"
+	printf "\n${COLOR_YELLOW}9: ${COLOR_NONE}Restart zsh"
 	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
 
 	echo -ne "\nType in the option: "
@@ -310,12 +314,23 @@ do
 				8)
 					install_program
 					;;
-       		     	;;
+				9)
+					chsh -s ${which zsh}
+					zsh
+       	 			*)
+            				echo "Invalid option"
+            				;;
+			esac
+       	     		;;
        	 	[A-Za-z]*)
        	     		case "$opt" in
 				q)
 					exit 1
 					;;
+       	 			*)
+            				echo "Invalid option"
+            				;;
+			esac
        	     		;;
        	 	*)
             		echo "Invalid option"
