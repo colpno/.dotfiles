@@ -274,6 +274,9 @@ do
 					bind_key
 					install_program
 					setup_profile
+
+					chsh -s /usr/bin/zsh
+					zsh
 					;;
 				1)
 					install_fonts
