@@ -92,8 +92,8 @@ setup_profile() {
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/themes/powerlevel10k}
 	git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
 
-	info "Restoring terminal profile"
-	dconf load /org/gnome/terminal/legacy/profiles:/ < ${DOTFILES}/gnome-terminal/profile.dconf
+	info "Restoring user dconf"
+	dconf load / < ${DOTFILES}/gnome-terminal/user.dconf
 }
 
 setup_symlinks() {
