@@ -46,11 +46,11 @@ After the installation, do the following:
 
 ### Windows
 
-2. Install [git](https://git-scm.com/download/win)
-2. `cd ~`
-2. `git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles`
-2. `cd .dotfiles`
-2. Run `install.bat`
+1. Install [git](https://git-scm.com/download/win)
+1. `cd ~`
+1. `git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles`
+1. `cd .dotfiles`
+1. Run `install.bat`
 
 
 
