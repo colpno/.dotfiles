@@ -300,8 +300,9 @@ do
 					install_program
 					;;
 				9)
-					chsh -s ${which zsh}
+					chsh -s /usr/bin/zsh
 					zsh
+					;;
        	 			*)
             				echo "Invalid option"
             				;;
