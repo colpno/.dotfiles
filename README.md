@@ -2,7 +2,7 @@
 
 ### Ubuntu
 
-- Install some packages (`git`, `curl`, `tree`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions`)
+- Install some packages (`git`, `curl`, `tree`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions-manager`, `python3-pip`)
 - Config terminal profile
 - Config vim
 - Install fonts (`Fira Code`, `Source Code Pro`)
@@ -19,6 +19,16 @@
 
 ## Installation
 
+### Ubuntu
+
+```bash
+sudo apt update
+```
+
+```bash
+sudo apt install git
+```
+
 ```bash
 git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
 ```
@@ -27,15 +37,17 @@ git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
-### Ubuntu
-
 ```bash
 ./install.sh
 ```
 
 ### Windows
 
-Run `install.bat`
+1. Install [git](https://git-scm.com/download/win)
+1. `cd ~`
+1. `git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles`
+1. `cd .dotfiles`
+1. Run `install.bat`
 
 
 
