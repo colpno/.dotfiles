@@ -52,3 +52,9 @@ prev-tab='<Primary><Shift>Tab'
 [org/gnome/terminal/legacy]
 mnemonics-enabled=false
 new-terminal-mode='tab'
+
+[org/gnome/desktop/input-sources]
+mru-sources=[('xkb', 'us'), ('ibus', 'Unikey')]
+per-window=false
+sources=[('xkb', 'us'), ('ibus', 'Unikey')]
+xkb-options=@as []
