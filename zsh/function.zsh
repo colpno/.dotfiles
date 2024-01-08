@@ -3,7 +3,7 @@ open_terminal_run_command() {
 }
 
 run_project() {
-	if [[ $# -eq 1 ]]; then
+	if [[ $# -ge 1 ]]; then
 		case $1 in
 			FavVid)
 				server_title='Backend'
@@ -14,16 +14,16 @@ run_project() {
 				client_dir='~/Workspace/FavVid/client'
 				client_run_command='npm run dev'
 
-				if [[ $1 == 'server' ]]; then
+				if [[ $2 == 'server' ]]; then
 					open_terminal_run_command $server_title "cd $server_dir && code . && $server_run_command"
 				else
 					open_terminal_run_command $server_title "cd $server_dir && $server_run_command"
 				fi
 
-				if [[ $1 == 'client' ]]; then
+				if [[ $2 == 'client' ]]; then
 					open_terminal_run_command $client_title "cd $client_dir && code . && $client_run_command"
 				else
-					open_terminal_run_command $client_title "cd $client_dir && code . && $client_run_command"
+					open_terminal_run_command $client_title "cd $client_dir && $client_run_command"
 				fi
 				;;
 			*)
