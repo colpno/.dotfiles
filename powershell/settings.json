@@ -46,7 +46,7 @@
             "colorScheme": "One Half Dark",
             "font": 
             {
-                "face": "MesloLGS NF"
+                "face": "SauceCodePro Nerd Font"
             }
         },
         "list": 
@@ -287,61 +287,5 @@
             "yellow": "#808000"
         }
     ],
-    "themes": 
-    [
-        {
-            "name": "legacyDark",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "dark",
-                "useMica": false
-            }
-        },
-        {
-            "name": "legacyLight",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "light",
-                "useMica": false
-            }
-        },
-        {
-            "name": "legacySystem",
-            "tab": 
-            {
-                "background": null,
-                "showCloseButton": "always",
-                "unfocusedBackground": null
-            },
-            "window": 
-            {
-                "applicationTheme": "system",
-                "useMica": false
-            }
-        }
-    ]
-}{
-	"dismissedMessages" : 
-	[
-		"setAsDefault"
-	],
-	"generatedProfiles" : 
-	[
-		"{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-		"{2c4de342-38b7-51cf-b940-2309a097f518}",
-		"{b453ae62-4e3d-5e58-b989-0a998ec441b8}"
-	],
-	"settingsHash" : "47708611cbbc0c25-01da098afc48ffe3"
-}
+    "themes": []
+}
