@@ -39,9 +39,9 @@ git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
 cd ~/.dotfiles && ./install.sh
 ```
 
+#### NOTE:
 After the installation, do the following:
 1. Restart (Reboot) the system 
-1. Add **Vietnamese (Unikey)** to **Input Source**
 1. Change **Keyboard input method system** to **none** in **Language Support**
 
 ### Windows
