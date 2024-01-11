@@ -334,4 +334,4 @@ do
 	installation_guide
 done
 
-success "Done"
+success "\nDone"
