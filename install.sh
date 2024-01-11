@@ -234,7 +234,7 @@ clean_up() {
 		sudo apt-get remove --purge -y "$package"
 	done
 
-	sudo apt-get autoremove
+	sudo apt-get autoremove -y
 }
 
 # Prerequisites
