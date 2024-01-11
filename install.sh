@@ -1,9 +1,10 @@
 #!/bin/bash
-TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey"
+TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo"
 PIP_PACKAGES="gnome-extensions-cli"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 VIM_PLUGINS="https://tpope.io/vim/surround.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com toggle-night-light@cansozbir.github.io Vitals@CoreCoding.com theme-switcher@fthx"
+UNINSTALL_PACKAGES="make cargo"
 
 DOTHOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
 DOTFILES="$(pwd)"
@@ -178,20 +179,6 @@ install_gnome_extensions() {
 	done
 }
 
-bind_key() {
-	title "Binding shortcut key"
-
-	gsettings set org.gnome.settings-daemon.plugins.media-keys terminal []
-
-	# Create key binding list
-	gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
-
-	# Bind key
-	gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name "'Launch terminal'"
-	gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding "'<Primary><Alt>t'"
-	gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command "'gnome-terminal --maximize'"
-}
-
 install_program() {
 	read -p "Do you want to install the programs? [y/n]: " opt
 	if [[ "$opt" == "y" ]]; then
@@ -206,6 +193,15 @@ install_program() {
 
 		info "Installing Postman"
 		sudo snap install postman
+
+		info "Installing Spotify"
+		curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+		echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
+		sudo apt-get update && sudo apt-get install spotify-client
+		git clone https://github.com/abba23/spotify-adblock.git
+		cd spotify-adblock && make
+		sudo make install
+		cd ../ && rm -rf spotify-adblock
 	fi
 }
 
@@ -229,6 +225,18 @@ install_terminal_pkg() {
 	done
 }
 
+clean_up() {
+	title "Cleaning up"
+
+	for package in $UNINSTALL_PACKAGES
+	do
+		info "Uninstalling $package"
+		sudo apt-get remove --purge -y "$package"
+	done
+
+	sudo apt-get autoremove
+}
+
 # Prerequisites
 title "Updating apt repository"
 sudo apt update
@@ -247,8 +255,8 @@ installation_guide() {
 	printf "\n${COLOR_YELLOW}4: ${COLOR_NONE}Install package managers"
 	printf "\n${COLOR_YELLOW}5: ${COLOR_NONE}Set up git"
 	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Install gnome extensions"
-	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Bind shortcut keys"
-	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Install programs"
+	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Install programs"
+	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Clean up"
 	printf "\n${COLOR_YELLOW}9: ${COLOR_NONE}Restart zsh"
 	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
 
@@ -262,15 +270,15 @@ while [ "$opt" != "q" ];
 do
 	case "$opt" in
 		[0-9]*)
-            		case "$opt" in
+			case "$opt" in
 				0)
 					install_fonts
 					setup_package_manager
 					setup_git
 					install_gnome_extensions
-					bind_key
 					install_program
 					setup_profile
+					clean_up
 
 					chsh -s /usr/bin/zsh
 					zsh
@@ -294,33 +302,33 @@ do
 					install_gnome_extensions
 					;;
 				7)
-					bind_key
+					install_program
 					;;
 				8)
-					install_program
+					clean_up
 					;;
 				9)
 					chsh -s /usr/bin/zsh
 					zsh
 					;;
-       	 			*)
-            				echo "Invalid option"
-            				;;
+				*)
+					echo "Invalid option"
+					;;
 			esac
-       	     		;;
-       	 	[A-Za-z]*)
-       	     		case "$opt" in
+			;;
+		[A-Za-z]*)
+			case "$opt" in
 				q)
 					exit 1
 					;;
-       	 			*)
-            				echo "Invalid option"
-            				;;
+				*)
+					echo "Invalid option"
+					;;
 			esac
-       	     		;;
-       	 	*)
-            		echo "Invalid option"
-            		;;
+			;;
+		*)
+			echo "Invalid option"
+			;;
 	esac
 
 	installation_guide
