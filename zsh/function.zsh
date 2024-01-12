@@ -34,3 +34,24 @@ run_project() {
 		echo 'The project name must be pass as the first argument'
 	fi
 }
+
+mongo_runner() {
+    case "$1" in
+        --start)
+            sudo service mongod start
+            ;;
+        --stop)
+            sudo service mongod stop
+            ;;
+        --restart)
+            sudo service mongod restart
+            ;;
+		--verify)
+			sudo systemctl status mongod
+			;;
+        *)
+            echo "Invalid usage. Usage: mongo --start | --stop | --restart | --verify"
+            return 1
+            ;;
+    esac
+}
