@@ -1,10 +1,10 @@
 #!/bin/bash
-TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo"
+TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo gpg apt-transport-https"
 PIP_PACKAGES="gnome-extensions-cli"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 VIM_PLUGINS="https://tpope.io/vim/surround.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com toggle-night-light@cansozbir.github.io Vitals@CoreCoding.com theme-switcher@fthx"
-UNINSTALL_PACKAGES="make cargo"
+UNINSTALL_PACKAGES="make cargo gpg apt-transport-https"
 
 DOTHOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
 DOTFILES="$(pwd)"
@@ -185,7 +185,12 @@ install_program() {
 		title "Installing programs"
 
 		info "Installing VS Code"
-		sudo snap install --classic code
+		wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+		sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+		sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+		rm -f packages.microsoft.gpg
+		sudo apt update
+		sudo apt install code
 
 		info "Installing OBS Studio"
 		sudo add-apt-repository ppa:obsproject/obs-studio
