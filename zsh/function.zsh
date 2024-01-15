@@ -48,7 +48,7 @@ run_project() {
 				if compare_insensitive $opt_comic "client" || compare_insensitive $opt_comic "both" ; then
 					open_terminal_run_command $CLIENT_TITLE "cd $CLIENT_DIR && $CLIENT_RUN_COMMAND"
 				fi
-				if compare_insensitive $opt_comic "server" || compare_insensitive $opt_comic "both" ; then
+				if compare_insensitive $opt_comic "admin" || compare_insensitive $opt_comic "both" ; then
 					open_terminal_run_command $ADMIN_TITLE "cd $ADMIN_DIR && $ADMIN_RUN_COMMAND"
 				fi
 				;;
