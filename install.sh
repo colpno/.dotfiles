@@ -74,24 +74,10 @@ setup_profile() {
 		info "Installing $plugin"
 		git clone --depth=1 $plugin
 	done
-
-	info "Installing vim plugins"
-	create_dir_if_not_exist "$HOME/.vim/pack/plugins/start"
-
-	cd ~/.vim/pack/plugins/start
-	for plugin in $VIM_PLUGINS
-	do
-		info "Installing $plugin"
-		git clone --depth=1 $plugin 
-	done
-
 	cd $DOTFILES
 
 	info "Installing themes"
-	create_dir_if_not_exist "$HOME/.vim/pack/themes/start"
-
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/themes/powerlevel10k}
-	git clone --depth=1 https://github.com/dracula/vim.git ~/.vim/pack/theme/start/dracula
 
 	info "Restoring user dconf"
 	dconf load / < ${DOTFILES}/gnome-terminal/user.dconf
