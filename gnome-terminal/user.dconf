@@ -65,3 +65,8 @@ dock-fixed=false
 dock-position='BOTTOM'
 extend-height=false
 show-mounts=false
+
+[org/gnome/shell/extensions/bingwallpaper]
+delete-previous=true
+download-folder='~/Pictures/BingWallpaper/'
+hide=true
