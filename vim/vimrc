@@ -32,6 +32,6 @@ Plug 'terryma/vim-multiple-cursors'
 call plug#end()
 
 " Activate theme
-if !empty(glob('~/.vim/plugged'))
+if !empty(glob('~/.vim/plugged/dracula'))
 	colorscheme dracula
 endif
