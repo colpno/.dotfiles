@@ -65,7 +65,7 @@ setup_profile() {
 	title "Installing profile"
 
 	info "Installing oh-my-zsh"
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+	sh -cv "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
 
 	info "Installing oh-my-zsh plugins"
 	cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/plugins}
@@ -91,7 +91,7 @@ setup_symlinks() {
 		filename=$(basename "$path")
 		info "Creating symlink for $filename"
 
-		rm -rf ~/."$filename"
+		rm -rfv ~/."$filename"
 		ln -sv "$DOTFILES/$path" ~/."$filename"
 	done
 }
@@ -228,6 +228,22 @@ clean_up() {
 	sudo apt-get autoremove -y
 }
 
+installation_guide() {
+	printf "\n${COLOR_YELLOW}0: ${COLOR_NONE}Automatically install"
+	printf "\n${COLOR_YELLOW}1: ${COLOR_NONE}Install fonts"
+	printf "\n${COLOR_YELLOW}2: ${COLOR_NONE}Install package managers"
+	printf "\n${COLOR_YELLOW}3: ${COLOR_NONE}Set up git"
+	printf "\n${COLOR_YELLOW}4: ${COLOR_NONE}Install gnome extensions"
+	printf "\n${COLOR_YELLOW}5: ${COLOR_NONE}Install programs"
+	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Set up profile"
+	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Clean up"
+	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Restart zsh"
+	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
+
+	echo -ne "\nType in the option: "
+	read opt
+}
+
 # Prerequisites
 title "Updating apt repository"
 sudo apt update
@@ -237,23 +253,6 @@ setup_symlinks
 install_pip_pkg
 
 # Installation
-
-installation_guide() {
-	printf "\n${COLOR_YELLOW}0: ${COLOR_NONE}Automatically install"
-	printf "\n${COLOR_YELLOW}1: ${COLOR_NONE}Install fonts"
-	printf "\n${COLOR_YELLOW}2: ${COLOR_NONE}Set up profile"
-	printf "\n${COLOR_YELLOW}3: ${COLOR_NONE}Create symlinks"
-	printf "\n${COLOR_YELLOW}4: ${COLOR_NONE}Install package managers"
-	printf "\n${COLOR_YELLOW}5: ${COLOR_NONE}Set up git"
-	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Install gnome extensions"
-	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Install programs"
-	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Clean up"
-	printf "\n${COLOR_YELLOW}9: ${COLOR_NONE}Restart zsh"
-	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
-
-	echo -ne "\nType in the option: "
-	read opt
-}
 
 installation_guide
 
@@ -278,27 +277,24 @@ do
 					install_fonts
 					;;
 				2)
-					setup_profile
-					;;
-				3)
-					setup_symlinks
-					;;
-				4)
 					setup_package_manager
 					;;
-				5)
+				3)
 					setup_git
 					;;
-				6)
+				4)
 					install_gnome_extensions
 					;;
-				7)
+				5)
 					install_program
 					;;
-				8)
+				6)
+					setup_profile
+					;;
+				7)
 					clean_up
 					;;
-				9)
+				8)
 					chsh -s /usr/bin/zsh
 					zsh
 					;;
@@ -326,3 +322,4 @@ do
 done
 
 success "\nDone"
+
