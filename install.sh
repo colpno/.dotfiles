@@ -189,7 +189,7 @@ install_program() {
 		curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 		echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 		sudo apt-get update && sudo apt-get install spotify-client
-		git clone https://github.com/abba23/spotify-adblock.git
+		git clone --depth=1 https://github.com/abba23/spotify-adblock.git
 		cd spotify-adblock && make
 		sudo make install
 		cd ../ && rm -rf spotify-adblock
@@ -214,6 +214,13 @@ install_terminal_pkg() {
 		info "Installing $package"
 		sudo apt install -y "$package"
 	done
+
+	info "Installing todo.txt"
+	git clone --depth=1 git@github.com:todotxt/todo.txt-cli.git
+	cd todo.txt-cli
+	sudo make
+	sudo make install
+	cd ../ && rm -rfv todo.txt-cli
 }
 
 clean_up() {
@@ -222,10 +229,10 @@ clean_up() {
 	for package in $UNINSTALL_PACKAGES
 	do
 		info "Uninstalling $package"
-		sudo apt-get remove --purge -y "$package"
+		sudo apt remove --purge -y "$package"
 	done
 
-	sudo apt-get autoremove -y
+	sudo apt autoremove -y
 }
 
 installation_guide() {
