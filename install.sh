@@ -220,6 +220,7 @@ install_terminal_pkg() {
 	cd todo.txt-cli
 	sudo make
 	sudo make install
+	cp -fv todo.cfg ~/.todo/config
 	cd ../ && rm -rfv todo.txt-cli
 }
 
