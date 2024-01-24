@@ -15,31 +15,36 @@ compare_insensitive() {
 
 run_project() {
 	WORKSPACE="~/Workspace"
+	SERVER_TITLE="Server"
+	CLIENT_TITLE="Client"
+	ADMIN_TITLE="Admin"
+
 	if [[ $# -ge 1 ]]; then
-		case $1 in
-			FavVid)
-				SERVER_TITLE="Server"
-				SERVER_DIR="$WORKSPACE/FavVid/server"
+		project=$(echo $1 | tr '[:upper:]' '[:lower:]')
+
+		case $project in
+			favvid)
+				ROOT_DIR="$WORKSPACE/FavVid"
+
+				SERVER_DIR="$ROOT_DIR/server"
 				SERVER_RUN_COMMAND="npm run dev"
 
-				CLIENT_TITLE="Client"
-				CLIENT_DIR="$WORKSPACE/FavVid/client"
+				CLIENT_DIR="$ROOT_DIR/client"
 				CLIENT_RUN_COMMAND="npm run dev"
 
 				open_terminal_run_command $SERVER_TITLE "cd $SERVER_DIR && $SERVER_RUN_COMMAND"
 				open_terminal_run_command $CLIENT_TITLE "cd $CLIENT_DIR && $CLIENT_RUN_COMMAND"
 				;;
-			Comic)
-				SERVER_TITLE="Server"
-				SERVER_DIR="$WORKSPACE/MongoERN_Comic/server"
+			comic)
+				ROOT_DIR="$WORKSPACE/MongoERN_Comic"
+
+				SERVER_DIR="$ROOT_DIR/server"
 				SERVER_RUN_COMMAND="npm start"
 
-				CLIENT_TITLE="Client"
-				CLIENT_DIR="$WORKSPACE/MongoERN_Comic/client"
+				CLIENT_DIR="$ROOT_DIR/client"
 				CLIENT_RUN_COMMAND="npm start"
 
-				ADMIN_TITLE="Admin"
-				ADMIN_DIR="$WORKSPACE/MongoERN_Comic/admin"
+				ADMIN_DIR="$ROOT_DIR/admin"
 				ADMIN_RUN_COMMAND="npm start"
 
 				echo -n "client or admin or both: "
