@@ -90,10 +90,12 @@ setup_symlinks() {
 	do
 		filename=$(basename "$path")
 		info "Creating symlink for $filename"
-
-		rm -rfv ~/."$filename"
-		ln -sv "$DOTFILES/$path" ~/."$filename"
+		ln -svf "$DOTFILES/$path" ~/."$filename"
 	done
+
+	info "Creating symlink for todotxt"
+	mkdir -v ~/.todo
+	ln -svf "$DOTFILES/todotxt/config" ~/.todo/config
 }
 
 setup_package_manager() {
