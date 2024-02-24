@@ -4,3 +4,4 @@ alias run=run_project
 alias updatecode='sudo apt update && sudo apt install code'
 alias mongo=mongo_runner
 alias t=todo.sh
+alias c=code
