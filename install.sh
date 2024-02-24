@@ -226,6 +226,19 @@ install_terminal_pkg() {
 	cd ../ && rm -rfv todo.txt-cli
 }
 
+install_laravel() {
+	title "Installing Laravel"
+
+	info "Installing php"
+	sudo apt install -y php php-common php-cli php-gd php-mysqlnd php-curl php-intl php-mbstring php-bcmath php-xml php-zip
+
+	info "Installing composer"
+	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+
+	success "Create project: composer create-project laravel/laravel project_name"
+	success "Run server: php artisan serve"
+}
+
 clean_up() {
 	title "Cleaning up"
 
@@ -248,21 +261,15 @@ installation_guide() {
 	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Set up profile"
 	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Clean up"
 	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Restart zsh"
+	printf "\n${COLOR_YELLOW}9: ${COLOR_NONE}Install Laravel"
 	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
 
 	echo -ne "\nType in the option: "
 	read opt
 }
 
-# Prerequisites
 title "Updating apt repository"
 sudo apt update
-
-install_terminal_pkg
-setup_symlinks
-install_pip_pkg
-
-# Installation
 
 installation_guide
 
@@ -272,6 +279,10 @@ do
 		[0-9]*)
 			case "$opt" in
 				0)
+					install_terminal_pkg
+					setup_symlinks
+					install_pip_pkg
+
 					install_fonts
 					setup_package_manager
 					setup_git
@@ -307,6 +318,9 @@ do
 				8)
 					chsh -s /usr/bin/zsh
 					zsh
+					;;
+				9)
+					install_laravel
 					;;
 				*)
 					echo "Invalid option"
