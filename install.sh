@@ -235,8 +235,8 @@ install_laravel() {
 	info "Installing composer"
 	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
 
-	success "Create project: composer create-project laravel/laravel project_name"
-	success "Run server: php artisan serve"
+	title "Installing mysql"
+	sudo apt install -y mysql-server
 }
 
 clean_up() {
