@@ -2,7 +2,7 @@
 
 ### Ubuntu
 
-- Install some packages (`git`, `curl`, `tree`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions-manager`, `python3-pip`, `ibus-unikey`)
+- Install some necessary packages (`git`, `curl`, `tree`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions-manager`, `python3-pip`, `ibus-unikey`)
 - Install some pip packages (`gnome-extensions-cli`)
 - Config profile
 - Config vim
@@ -10,7 +10,8 @@
 - Install fonts (`Fira Code`, `Source Code Pro`)
 - Generate ssh key
 - Install some programs (`VSCode`, `Postman`, `OBS Studio`)
-- Install some gnome extensions (`Blur my screen`, `Vitals`, `Toggle Night Light`, `Bing Wallpaper`)
+- Install some gnome extensions (`blur-my-shell`, `Vitals`, `toggle-night-light`, `BingWallpaper`, `theme-switcher`)
+- Optionally install Laravel + MySQL
 
 ### Windows
 
@@ -58,3 +59,4 @@ After the installation, do the following:
 - [Add custom keybindings](https://techwiser.com/custom-keyboard-shortcuts-ubuntu/)
 - [ohmyzsh](https://github.com/ohmyzsh/ohmyzsh)
 - [ohmyposh](https://ohmyposh.dev/docs)
+- [Install MySQL on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04)
