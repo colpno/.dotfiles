@@ -1,5 +1,5 @@
 #!/bin/bash
-TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo gpg apt-transport-https"
+TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard"
 PIP_PACKAGES="gnome-extensions-cli"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 VIM_PLUGINS="https://tpope.io/vim/surround.git"
