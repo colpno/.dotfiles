@@ -23,6 +23,18 @@ run_project() {
 		project=$(echo $1 | tr '[:upper:]' '[:lower:]')
 
 		case $project in
+			movie)
+				ROOT_DIR="$WORKSPACE/movie-app"
+
+				SERVER_DIR="$ROOT_DIR/server"
+				SERVER_RUN_COMMAND="php '/home/vinh/Workspace/movie-app/server/artisan' serve --host=localhost --port=8000"
+
+				CLIENT_DIR="$ROOT_DIR/client"
+				CLIENT_RUN_COMMAND="npm run dev"
+
+				open_terminal_run_command $SERVER_TITLE "cd $SERVER_DIR && $SERVER_RUN_COMMAND"
+				open_terminal_run_command $CLIENT_TITLE "cd $CLIENT_DIR && $CLIENT_RUN_COMMAND"
+				;;
 			favvid)
 				ROOT_DIR="$WORKSPACE/FavVid"
 
