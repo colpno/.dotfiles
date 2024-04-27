@@ -1,12 +1,11 @@
 #!/bin/bash
-TERMINAL_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard"
+APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste"
 PIP_PACKAGES="gnome-extensions-cli"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
-VIM_PLUGINS="https://tpope.io/vim/surround.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com toggle-night-light@cansozbir.github.io Vitals@CoreCoding.com theme-switcher@fthx"
-UNINSTALL_PACKAGES="make cargo gpg apt-transport-https"
+CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
 
-DOTHOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
+HOME_SYMLINKS="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
 DOTFILES="$(pwd)"
 
 COLOR_GRAY="\033[1;38;5;243m"
@@ -86,7 +85,7 @@ setup_profile() {
 setup_symlinks() {
 	title "Creating symlinks"
 
-	for path in $DOTHOME
+	for path in $HOME_SYMLINKS
 	do
 		filename=$(basename "$path")
 		info "Creating symlink for $filename"
@@ -211,7 +210,7 @@ install_pip_pkg() {
 install_terminal_pkg() {
 	title "Installing terminal packages"
 
-	for package in $TERMINAL_PACKAGES
+	for package in $APT_PACKAGES
 	do
 		info "Installing $package"
 		sudo apt install -y "$package"
@@ -242,7 +241,7 @@ install_laravel() {
 clean_up() {
 	title "Cleaning up"
 
-	for package in $UNINSTALL_PACKAGES
+	for package in $CLEAN_UP_APT_PACKAGES
 	do
 		info "Uninstalling $package"
 		sudo apt remove --purge -y "$package"

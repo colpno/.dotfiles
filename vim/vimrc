@@ -14,9 +14,9 @@ set autoindent
 set cursorline
 
 " Install vim-plug
-let data_dir = '~/.vim'
-if empty(glob(data_dir . '/autoload/plug.vim'))
-  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+let VIM_DIR = '~/.vim'
+if empty(glob(VIM_DIR . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.VIM_DIR.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
