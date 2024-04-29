@@ -1,11 +1,10 @@
 #!/bin/bash
 APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste"
-PIP_PACKAGES="gnome-extensions-cli"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com toggle-night-light@cansozbir.github.io Vitals@CoreCoding.com theme-switcher@fthx"
 CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
 
-HOME_SYMLINKS="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
+SYMLINKS_HOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
 DOTFILES="$(pwd)"
 
 COLOR_GRAY="\033[1;38;5;243m"
@@ -47,9 +46,44 @@ create_dir_if_not_exist() {
 	fi
 }
 
+multiple_select_question="Choose"
+multiple_select() {
+    local options=("$@")
+    selected=()
+
+    menu() {
+		clear
+        for i in ${!options[@]}; do
+            printf "%3d[%s] %s\n" $((i+1)) "${choices[i]:- }" "${options[i]}"
+        done
+        [[ "$msg" ]] && echo "$msg"; :
+    }
+
+    local prompt="$multiple_select_question (again to uncheck, ENTER when done): "
+    while menu && read -rp "$prompt" num && [[ "$num" ]]; do
+        case $num in
+            q|Q) 
+				selected=()
+				break ;;
+        esac
+        [[ "$num" != *[![:digit:]]* ]] &&
+        (( num > 0 && num <= ${#options[@]} )) ||
+        { msg="Invalid option: $num"; continue; }
+        ((num--)); msg=""
+        [[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
+    done
+
+    for i in ${!options[@]}; do
+        [[ "${choices[i]}" ]] && selected+=("${options[i]}")
+    done
+
+	options=()
+	choices=()
+}
+
 install_fonts() {
 	title "Installing fonts"
-	FONT_DIR="/usr/share/fonts"
+	local FONT_DIR="/usr/share/fonts"
 
 	sudo find ./fonts -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_DIR/" \;
 
@@ -58,83 +92,81 @@ install_fonts() {
 		fc-cache -fv "$USER_FONT_DIR"
 		source /etc/profile
 	fi
+
+	success "Fonts are installed"
 }
 
-setup_profile() {
-	title "Installing profile"
+setup_terminal_profile() {
+	title "Configuring profile"
 
 	info "Installing oh-my-zsh"
 	sh -cv "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+	success "oh-my-zsh is installed"
 
-	info "Installing oh-my-zsh plugins"
+	info "Installing oh-my-zsh's plugins"
 	cd ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/plugins}
 	for plugin in $ZSH_PLUGINS
 	do
 		info "Installing $plugin"
 		git clone --depth=1 $plugin
+		success "$plugin is installed"
 	done
 	cd $DOTFILES
 
-	info "Installing themes"
+	info "Installing powerlevel10k theme"
 	git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/themes/powerlevel10k}
+	success "powerlevel10k is installed"
 
 	info "Restoring user dconf"
 	dconf load / < ${DOTFILES}/gnome-terminal/user.dconf
+
+	success "Profile is configured"
 }
 
-setup_symlinks() {
+create_symlinks() {
 	title "Creating symlinks"
 
-	for path in $HOME_SYMLINKS
+	for path in $SYMLINKS_HOME
 	do
-		filename=$(basename "$path")
+		local filename=$(basename "$path")
 		info "Creating symlink for $filename"
 		ln -svf "$DOTFILES/$path" ~/."$filename"
+		success "Symlink of $filename is created"
 	done
 
-	info "Creating symlink for todotxt"
 	mkdir -v ~/.todo
 	ln -svf "$DOTFILES/todotxt/config" ~/.todo/config
+	success "Symlink of todo config is created"
 }
 
-setup_package_manager() {
-	title "Installing package managers"
+install_js_pkg_managers() {
+	title "Installing Javascript package managers"
 
-	flag=0
-	read -p "What package manager do you use? [npm]: " pkgmng
+	local packages=("$@")
 
-	while [ $flag -eq 0 ];
-	do
-		case $pkgmng in
-			npm)
-				info "Installing nvm"
-				curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-				source ~/.zshrc
+	if [[ "${packages[@]}" =~ "npm" ]]; then
+		info "Installing nvm"
+		curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+		source ~/.zshrc
+		success "nvm is installed"
 
-				info "Installing npm"
-				is_continue="y"
-				while [ "$is_continue" == "y" ];
-				do
-					nvm ls
-					printf "\n"
-					read -p "Type in the version of npm [--lts/version]: " npm_version
+		info "Installing npm"
+		local is_continue="y"
+		while [ "$is_continue" == "y" ];
+		do
+			nvm ls
+			printf "\n"
+			read -p "Type in the version of npm [--lts/version]: " npm_version
 
-					nvm install $npm_version
+			nvm install $npm_version
+			success "npm $npm_version is installed"
 
-					read -p "Another version? [y/n]: " is_continue
-				done
-
-				flag=1
-				;;
-			*)
-				warning "$pkgmng is not listed"
-				read -p "What package manager do you use? [npm]: " pkgmng
-				;;
-		esac
-	done
+			read -p "Another version? [y/n]: " is_continue
+		done
+	fi
 }
 
-setup_git() {
+setup_github_ssh() {
 	title "Creating github ssh key"
 
 	ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
@@ -144,7 +176,7 @@ setup_git() {
 	info "SSH key: "
 	cat ~/.ssh/id_ed25519.pub
 
-	flag=0
+	local flag=0
 	while [ $flag -eq 0 ]; do
 		printf "\n"
 		read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
@@ -159,19 +191,24 @@ setup_git() {
 install_gnome_extensions() {
 	title "Installing gnome extensions"
 
+	pip3 install --upgrade gnome-extensions-cli
+
 	for extension in $GNOME_EXTENSIONS
 	do
 		info "Installing $extension"
 		gext install $extension
+		success "$extension is installed"
 	done
 }
 
-install_program() {
-	read -p "Do you want to install the programs? [y/n]: " opt
-	if [[ "$opt" == "y" ]]; then
-		title "Installing programs"
+install_programs() {
+	title "Installing programs"
 
+	local programs=("$@")
+
+	if [[ "${programs[@]}" =~ "VS Code" ]]; then
 		info "Installing VS Code"
+
 		wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
 		sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
 		sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
@@ -179,14 +216,29 @@ install_program() {
 		sudo apt update
 		sudo apt install code
 
+		success "VS Code is installed"
+	fi
+
+	if [[ "${programs[@]}" =~ "OBS Studio" ]]; then
 		info "Installing OBS Studio"
+
 		sudo add-apt-repository ppa:obsproject/obs-studio
 		sudo apt install -y obs-studio
 
+		success "OBS Studio is installed"
+	fi
+
+	if [[ "${programs[@]}" =~ "Postman" ]]; then
 		info "Installing Postman"
+
 		sudo snap install postman
 
+		success "Postman is installed"
+	fi
+
+	if [[ "${programs[@]}" =~ "Spotify" ]]; then
 		info "Installing Spotify"
+
 		curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 		echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 		sudo apt-get update && sudo apt-get install spotify-client
@@ -194,48 +246,45 @@ install_program() {
 		cd spotify-adblock && make
 		sudo make install
 		cd ../ && rm -rf spotify-adblock
+
+		success "Spotify is installed"
 	fi
 }
 
-install_pip_pkg() {
-	title "Installing pip packages"
-
-	for package in $PIP_PACKAGES
-	do
-		info "Installing $package"
-		pip3 install --upgrade "$package"
-	done
-}
-
-install_terminal_pkg() {
+install_apt_pkg() {
 	title "Installing terminal packages"
 
 	for package in $APT_PACKAGES
 	do
 		info "Installing $package"
 		sudo apt install -y "$package"
+		success  "$package is installed"
 	done
 
-	info "Installing todo.txt"
+	title "Installing todo.txt"
 	git clone --depth=1 git@github.com:todotxt/todo.txt-cli.git
 	cd todo.txt-cli
 	sudo make
 	sudo make install
 	cp -fv todo.cfg ~/.todo/config
 	cd ../ && rm -rfv todo.txt-cli
+	success "todo.txt is installed"
 }
 
 install_laravel() {
 	title "Installing Laravel"
 
-	info "Installing php"
+	info "Installing PHP"
 	sudo apt install -y php php-common php-cli php-gd php-mysqlnd php-curl php-intl php-mbstring php-bcmath php-xml php-zip
+	success "PHP is installed"
 
-	info "Installing composer"
+	info "Installing Composer"
 	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+	success "Composer is installed"
 
-	title "Installing mysql"
+	info "Installing MySQL"
 	sudo apt install -y mysql-server
+	success "MySQL is installed"
 }
 
 clean_up() {
@@ -248,101 +297,56 @@ clean_up() {
 	done
 
 	sudo apt autoremove -y
+
+	success "Cleaned up"
 }
 
-installation_guide() {
-	printf "\n${COLOR_YELLOW}0: ${COLOR_NONE}Automatically install"
-	printf "\n${COLOR_YELLOW}1: ${COLOR_NONE}Install fonts"
-	printf "\n${COLOR_YELLOW}2: ${COLOR_NONE}Install package managers"
-	printf "\n${COLOR_YELLOW}3: ${COLOR_NONE}Set up git"
-	printf "\n${COLOR_YELLOW}4: ${COLOR_NONE}Install gnome extensions"
-	printf "\n${COLOR_YELLOW}5: ${COLOR_NONE}Install programs"
-	printf "\n${COLOR_YELLOW}6: ${COLOR_NONE}Set up profile"
-	printf "\n${COLOR_YELLOW}7: ${COLOR_NONE}Clean up"
-	printf "\n${COLOR_YELLOW}8: ${COLOR_NONE}Restart zsh"
-	printf "\n${COLOR_YELLOW}9: ${COLOR_NONE}Install Laravel"
-	printf "\n${COLOR_YELLOW}q: ${COLOR_NONE}Exit"
+installation() {
+	local selected_pkg_mngrs=""
+	local selected_programs=""
+	local laravel=""
 
-	echo -ne "\nType in the option: "
-	read opt
+	multiple_select_question="Choose the package manager(s)"
+	local pkg_mngrs=("npm")
+	multiple_select "${pkg_mngrs[@]}"
+	selected_pkg_mngrs="${selected[@]}"
+
+	multiple_select_question="Choose the program(s)"
+	local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
+	multiple_select "${programs[@]}"
+	selected_programs="${selected[@]}"
+
+	clear
+	PS3="Do you want to install Laravel? "
+	select opt in yes no; do
+		case $opt in
+			yes) 
+				laravel="yes"
+				break ;;
+			no) 
+				laravel="no"
+				break ;;
+			*) echo "Invalid option $opt" ;;
+		esac
+	done
+
+	title "Updating apt repository"
+	sudo apt update
+
+	install_apt_pkg
+	create_symlinks
+	install_fonts
+	install_js_pkg_managers "${selected_pkg_mngrs[@]}"
+	setup_github_ssh
+	install_gnome_extensions
+	install_programs "${selected_programs[@]}"
+	setup_terminal_profile
+	[[ "$laravel" = "yes" ]] && install_laravel
+	clean_up
+
+	chsh -s /usr/bin/zsh
+	zsh
 }
 
-title "Updating apt repository"
-sudo apt update
-
-installation_guide
-
-while [ "$opt" != "q" ];
-do
-	case "$opt" in
-		[0-9]*)
-			case "$opt" in
-				0)
-					install_terminal_pkg
-					setup_symlinks
-					install_pip_pkg
-
-					install_fonts
-					setup_package_manager
-					setup_git
-					install_gnome_extensions
-					install_program
-					setup_profile
-					clean_up
-
-					chsh -s /usr/bin/zsh
-					zsh
-					;;
-				1)
-					install_fonts
-					;;
-				2)
-					setup_package_manager
-					;;
-				3)
-					setup_git
-					;;
-				4)
-					install_gnome_extensions
-					;;
-				5)
-					install_program
-					;;
-				6)
-					setup_profile
-					;;
-				7)
-					clean_up
-					;;
-				8)
-					chsh -s /usr/bin/zsh
-					zsh
-					;;
-				9)
-					install_laravel
-					;;
-				*)
-					echo "Invalid option"
-					;;
-			esac
-			;;
-		[A-Za-z]*)
-			case "$opt" in
-				q)
-					exit 1
-					;;
-				*)
-					echo "Invalid option"
-					;;
-			esac
-			;;
-		*)
-			echo "Invalid option"
-			;;
-	esac
-
-	installation_guide
-done
-
-success "\nDone"
-
+installation
+success "Done"
