@@ -46,8 +46,9 @@ create_dir_if_not_exist() {
 	fi
 }
 
-multiple_select_question="Choose"
 multiple_select() {
+	local question="$1"
+	shift
     local options=("$@")
     selected=()
 
@@ -59,7 +60,7 @@ multiple_select() {
         [[ "$msg" ]] && echo "$msg"; :
     }
 
-    local prompt="$multiple_select_question (again to uncheck, ENTER when done): "
+    local prompt="$question (again to uncheck, ENTER when done): "
     while menu && read -rp "$prompt" num && [[ "$num" ]]; do
         case $num in
             q|Q) 
@@ -83,6 +84,7 @@ multiple_select() {
 
 install_fonts() {
 	title "Installing fonts"
+
 	local FONT_DIR="/usr/share/fonts"
 
 	sudo find ./fonts -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_DIR/" \;
@@ -151,41 +153,30 @@ install_js_pkg_managers() {
 		success "nvm is installed"
 
 		info "Installing npm"
-		local is_continue="y"
-		while [ "$is_continue" == "y" ];
-		do
-			nvm ls
-			printf "\n"
-			read -p "Type in the version of npm [--lts/version]: " npm_version
+		nvm install --lts
+		success "Latest npm version is installed"
+	fi
 
-			nvm install $npm_version
-			success "npm $npm_version is installed"
-
-			read -p "Another version? [y/n]: " is_continue
-		done
+	if [[ "${packages[@]}" =~ "yarn" ]]; then
+		info "Installing yarn"
+		curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+		echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+		sudo apt update
+		sudo apt install --no-install-recommends yarn
+		success "Latest yarn version is installed"
 	fi
 }
 
 setup_github_ssh() {
-	title "Creating github ssh key"
+	title "Generating github ssh key"
 
 	ssh-keygen -t ed25519 -C "gvinhh@gmail.com"
 	eval "$(ssh-agent -s)"
 	ssh-add ~/.ssh/id_ed25519
 
 	info "SSH key: "
-	cat ~/.ssh/id_ed25519.pub
-
-	local flag=0
-	while [ $flag -eq 0 ]; do
-		printf "\n"
-		read -p "Confirm that you've added the SSH public key to your account on GitHub: https://github.com/settings/ssh/new [y/n]: " opt
-
-		if [[ $opt == "y" ]];
-		then
-			flag=1
-		fi
-	done
+	touch git_ssh.txt
+	cat ~/.ssh/id_ed25519.pub > git_ssh.txt
 }
 
 install_gnome_extensions() {
@@ -306,14 +297,12 @@ installation() {
 	local selected_programs=""
 	local laravel=""
 
-	multiple_select_question="Choose the package manager(s)"
-	local pkg_mngrs=("npm")
-	multiple_select "${pkg_mngrs[@]}"
+	local pkg_mngrs=("npm" "yarn")
+	multiple_select "Choose the package manager(s)" "${pkg_mngrs[@]}"
 	selected_pkg_mngrs="${selected[@]}"
 
-	multiple_select_question="Choose the program(s)"
 	local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
-	multiple_select "${programs[@]}"
+	multiple_select "Choose the program(s)" "${programs[@]}"
 	selected_programs="${selected[@]}"
 
 	clear
