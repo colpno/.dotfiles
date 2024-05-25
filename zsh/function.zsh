@@ -36,7 +36,7 @@ run_project() {
 				open_terminal_run_command $CLIENT_TITLE "cd $CLIENT_DIR && $CLIENT_RUN_COMMAND"
 				;;
 			favvid)
-				ROOT_DIR="$WORKSPACE/FavVid"
+				ROOT_DIR="$WORKSPACE/favvid"
 
 				SERVER_DIR="$ROOT_DIR/server"
 				SERVER_RUN_COMMAND="npm run dev"
@@ -44,8 +44,13 @@ run_project() {
 				CLIENT_DIR="$ROOT_DIR/client"
 				CLIENT_RUN_COMMAND="npm run dev"
 
+				CRAWLER_TITLE="Crawler"
+				CRAWLER_DIR="$ROOT_DIR/crawler"
+				CRAWLER_RUN_COMMAND="python3 $CRAWLER_DIR/main.py"
+
 				open_terminal_run_command $SERVER_TITLE "cd $SERVER_DIR && $SERVER_RUN_COMMAND"
 				open_terminal_run_command $CLIENT_TITLE "cd $CLIENT_DIR && $CLIENT_RUN_COMMAND"
+				open_terminal_run_command $CRAWLER_TITLE "cd $CRAWLER_DIR && $CRAWLER_RUN_COMMAND"
 				;;
 			comic)
 				ROOT_DIR="$WORKSPACE/MongoERN_Comic"
