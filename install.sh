@@ -1,7 +1,7 @@
 #!/bin/bash
-APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager python3-pip ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste"
+APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
-GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com toggle-night-light@cansozbir.github.io Vitals@CoreCoding.com theme-switcher@fthx"
+GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com bluetooth-battery@michalw.github.com"
 CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
 
 SYMLINKS_HOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
@@ -46,6 +46,15 @@ create_dir_if_not_exist() {
 	fi
 }
 
+value_in_array() {
+    local match="$1"
+    shift
+    for e; do
+        [[ $e == *"$match"* ]] && return 0
+    done
+    return 1
+}
+
 multiple_select() {
 	local question="$1"
 	shift
@@ -87,7 +96,7 @@ install_fonts() {
 
 	local FONT_DIR="/usr/share/fonts"
 
-	sudo find ./fonts -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_DIR/" \;
+	sudo find "$DOTFILES/fonts" -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_DIR/" \;
 
 	if which fc-cache >/dev/null 2>&1 ;
 	then
@@ -121,6 +130,7 @@ setup_terminal_profile() {
 
 	info "Restoring user dconf"
 	dconf load / < ${DOTFILES}/gnome-terminal/user.dconf
+	success "User dconf is restored"
 
 	success "Profile is configured"
 }
@@ -132,11 +142,13 @@ create_symlinks() {
 	do
 		local filename=$(basename "$path")
 		info "Creating symlink for $filename"
+		rm -rfv "$filename"
 		ln -svf "$DOTFILES/$path" ~/."$filename"
 		success "Symlink of $filename is created"
 	done
 
-	mkdir -v ~/.todo
+	rm -rfv ~/.todo
+	create_dir_if_not_exist ~/.todo
 	ln -svf "$DOTFILES/todotxt/config" ~/.todo/config
 	success "Symlink of todo config is created"
 }
@@ -176,13 +188,14 @@ setup_github_ssh() {
 
 	info "SSH key: "
 	touch git_ssh.txt
-	cat ~/.ssh/id_ed25519.pub > git_ssh.txt
+	cat ~/.ssh/id_ed25519.pub
+	read -p "ENTER when done Github SSH establishing"
 }
 
 install_gnome_extensions() {
 	title "Installing gnome extensions"
 
-	pip3 install --upgrade gnome-extensions-cli
+	pipx install gnome-extensions-cli
 
 	for extension in $GNOME_EXTENSIONS
 	do
@@ -230,15 +243,20 @@ install_programs() {
 	if [[ "${programs[@]}" =~ "Spotify" ]]; then
 		info "Installing Spotify"
 
-		curl -sS https://download.spotify.com/debian/pubkey_7A3A762FAFD4A51F.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
-		echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
-		sudo apt-get update && sudo apt-get install spotify-client
-		git clone --depth=1 https://github.com/abba23/spotify-adblock.git
-		cd spotify-adblock && make
-		sudo make install
-		cd ../ && rm -rf spotify-adblock
+		read -p "Enter the download URL, by copying in https://www.spotify.com/us/download/linux: " url
+		if [ -n "$pubkey" ]; then
+			curl -sS "$url" | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+			echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
+			sudo apt-get update && sudo apt-get install spotify-client
+			git clone --depth=1 https://github.com/abba23/spotify-adblock.git
+			cd spotify-adblock && make
+			sudo make install
+			cd ../ && rm -rf spotify-adblock
 
-		success "Spotify is installed"
+			success "Spotify is installed"
+		else
+			error "Please provide pubkey"
+		fi
 	fi
 }
 
@@ -292,50 +310,56 @@ clean_up() {
 	success "Cleaned up"
 }
 
-installation() {
-	local selected_pkg_mngrs=""
-	local selected_programs=""
-	local laravel=""
+install() {
+	local selected_pkg_mngrs=()
+	local selected_programs=()
+	local selected_installation=()
 
-	local pkg_mngrs=("npm" "yarn")
-	multiple_select "Choose the package manager(s)" "${pkg_mngrs[@]}"
-	selected_pkg_mngrs="${selected[@]}"
+	# options to choose what to install
+	local installation_setup_terminal="Setup terminal"
+	local installation_github_ssh="Github SSH"
+	local installation_create_symlinks="Create symlinks"
+	local installation_install_fonts="Install fonts"
+	local installation_install_apt_pkgs="Install apt packages"
+	local installation_install_js_pkg_mng="Install Javascript package managers"
+	local installation_install_gnome_exts="Install gnome extensions"
+	local installation_install_programs="Install programs"
+	local installation_install_laravel="Install Laravel"
+	local installation_clean_up="Clean up"
 
-	local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
-	multiple_select "Choose the program(s)" "${programs[@]}"
-	selected_programs="${selected[@]}"
+	local installation=("$installation_setup_terminal" "$installation_github_ssh" "$installation_create_symlinks" "$installation_install_fonts" "$installation_install_apt_pkgs" "$installation_install_js_pkg_mng" "$installation_install_gnome_exts" "$installation_install_programs" "$installation_install_laravel" "$installation_clean_up")
+	multiple_select "Choose what to install" "${installation[@]}"
+	selected_installation="${selected[@]}"
 
-	clear
-	PS3="Do you want to install Laravel? "
-	select opt in yes no; do
-		case $opt in
-			yes) 
-				laravel="yes"
-				break ;;
-			no) 
-				laravel="no"
-				break ;;
-			*) echo "Invalid option $opt" ;;
-		esac
-	done
+	if value_in_array "$installation_install_js_pkg_mng" "${selected_installation[@]}"; then
+		local pkg_mngrs=("npm" "yarn")
+		multiple_select "Choose the package manager(s)" "${pkg_mngrs[@]}"
+		selected_pkg_mngrs="${selected[@]}"
+	fi
 
-	title "Updating apt repository"
-	sudo apt update
+	if value_in_array "$installation_install_programs" "${selected_installation[@]}"; then
+		local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
+		multiple_select "Choose the program(s)" "${programs[@]}"
+		selected_programs="${selected[@]}"
+	fi
 
-	install_apt_pkg
-	create_symlinks
-	install_fonts
-	install_js_pkg_managers "${selected_pkg_mngrs[@]}"
-	setup_github_ssh
-	install_gnome_extensions
-	install_programs "${selected_programs[@]}"
-	setup_terminal_profile
-	[[ "$laravel" = "yes" ]] && install_laravel
-	clean_up
+	if [ ${#selected_installation[@]} -gt 0 ]; then
+		title "Updating apt repository"
+		sudo apt update
+	fi
 
-	chsh -s /usr/bin/zsh
-	zsh
+	if value_in_array "$installation_github_ssh" "${selected_installation[@]}"; then setup_github_ssh; fi
+	if value_in_array "$installation_install_fonts" "${selected_installation[@]}"; then install_fonts; fi
+	if value_in_array "$installation_install_apt_pkgs" "${selected_installation[@]}"; then install_apt_pkg; fi
+	if value_in_array "$installation_install_js_pkg_mng" "${selected_installation[@]}"; then install_js_pkg_managers "${selected_pkg_mngrs[@]}"; fi
+	if value_in_array "$installation_install_gnome_exts" "${selected_installation[@]}"; then install_gnome_extensions; fi
+	if value_in_array "$installation_install_programs" "${selected_installation[@]}"; then install_programs "${selected_programs[@]}"; fi
+	if value_in_array "$installation_setup_terminal" "${selected_installation[@]}"; then setup_terminal_profile; fi
+	if value_in_array "$installation_install_laravel" "${selected_installation[@]}"; then install_laravel; fi
+	if value_in_array "$installation_create_symlinks" "${selected_installation[@]}"; then create_symlinks; fi
+	if value_in_array "$installation_clean_up" "${selected_installation[@]}"; then clean_up; fi
+	if value_in_array "$installation_setup_terminal" "${selected_installation[@]}"; then chsh -s /usr/bin/zsh && zsh; fi
 }
 
-installation
+install
 success "Done"
