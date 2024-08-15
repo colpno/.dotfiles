@@ -26,17 +26,8 @@
 
 ```bash
 sudo apt update
-```
-
-```bash
-sudo apt install git
-```
-
-```bash
+sudo apt install git -y
 git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
-```
-
-```bash
 cd ~/.dotfiles && ./install.sh
 ```
 
