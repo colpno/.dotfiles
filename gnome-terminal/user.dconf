@@ -1,36 +1,3 @@
-[org/gnome/shell/extensions/vitals]                                                                                                                       
-hot-sensors=['_memory_usage_', '_processor_usage_', '__temperature_avg__']
-show-battery=true
-show-fan=true
-show-network=true
-show-processor=true
-show-system=true
-
-[org/gnome/terminal/legacy/keybindings]
-next-tab='<Primary>Tab'
-prev-tab='<Primary><Shift>Tab'
-
-[org/gnome/settings-daemon/plugins/media-keys]
-custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
-home=['<Super>e']
-terminal=@as []
-
-[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
-binding='<Primary><Alt>t'
-command='gnome-terminal --maximize'
-name='Launch terminal'
-
-[org/freedesktop/ibus/engine/unikey]
-auto-restore-non-vn=false
-free-marking=true
-input-method='stelex'
-spell-check=true
-standalone-w-as-uw=true
-
-[desktop/ibus/panel/emoji]
-favorites=['😂', '✅']
-hotkey=['<Control>semicolon']
-
 [org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
 background-color='rgb(44,44,44)'
 background-transparency-percent=8
@@ -49,6 +16,16 @@ visible-name='Default'
 next-tab='<Primary>Tab'
 prev-tab='<Primary><Shift>Tab'
 
+[org/gnome/settings-daemon/plugins/media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
+home=['<Super>e']
+terminal=@as []
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
+binding='<Primary><Alt>t'
+command='gnome-terminal --maximize'
+name='Launch terminal'
+
 [org/gnome/terminal/legacy]
 mnemonics-enabled=false
 new-terminal-mode='tab'
@@ -58,6 +35,13 @@ mru-sources=[('xkb', 'us'), ('ibus', 'Unikey')]
 per-window=false
 sources=[('xkb', 'us'), ('ibus', 'Unikey')]
 xkb-options=@as []
+
+[org/freedesktop/ibus/engine/unikey]
+auto-restore-non-vn=false
+free-marking=true
+input-method='stelex'
+spell-check=true
+standalone-w-as-uw=true
 
 [org/gnome/shell/extensions/dash-to-dock]
 dash-max-icon-size=48
@@ -70,3 +54,11 @@ show-mounts=false
 delete-previous=true
 download-folder='~/Pictures/BingWallpaper/'
 hide=true
+
+[org/gnome/shell/extensions/vitals]
+hot-sensors=['_memory_usage_', '_processor_usage_', '__temperature_avg__']
+show-battery=true
+show-fan=true
+show-network=true
+show-processor=true
+show-system=true
