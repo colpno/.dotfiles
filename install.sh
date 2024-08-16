@@ -187,7 +187,6 @@ setup_github_ssh() {
 	ssh-add ~/.ssh/id_ed25519
 
 	info "SSH key: "
-	touch git_ssh.txt
 	cat ~/.ssh/id_ed25519.pub
 	read -p "ENTER when done Github SSH establishing"
 }
@@ -243,20 +242,13 @@ install_programs() {
 	if [[ "${programs[@]}" =~ "Spotify" ]]; then
 		info "Installing Spotify"
 
-		read -p "Enter the download URL, by copying in https://www.spotify.com/us/download/linux: " url
-		if [ -n "$pubkey" ]; then
-			curl -sS "$url" | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
-			echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
-			sudo apt-get update && sudo apt-get install spotify-client
-			git clone --depth=1 https://github.com/abba23/spotify-adblock.git
-			cd spotify-adblock && make
-			sudo make install
-			cd ../ && rm -rf spotify-adblock
-
-			success "Spotify is installed"
+		git clone --depth=1 https://github.com/abba23/spotify-adblock.git
+		if [ $? -eq 0 ]; then
+			cd spotify-adblock && make && sudo make install && cd ../ && rm -rf spotify-adblock
 		else
-			error "Please provide pubkey"
-		fi
+			cd archive/spotify-adblock && make && sudo make install && cd "$DOTFILES"
+
+		success "Spotify is installed"
 	fi
 }
 
@@ -271,12 +263,13 @@ install_apt_pkg() {
 	done
 
 	title "Installing todo.txt"
-	git clone --depth=1 git@github.com:todotxt/todo.txt-cli.git
-	cd todo.txt-cli
-	sudo make
-	sudo make install
-	cp -fv todo.cfg ~/.todo/config
-	cd ../ && rm -rfv todo.txt-cli
+	local DIR="$HOME/.todo"
+	local GIT_FOLDER="$DIR/git-folder"
+	create_dir_if_not_exist "$DIR"
+	create_dir_if_not_exist "$GIT_FOLDER"
+	git clone --depth=1 git@github.com:todotxt/todo.txt-cli.git "$GIT_FOLDER"
+	cd "$GIT_FOLDER" && make && sudo make install CONFIG_DIR=$DIR
+	rm -rfv "$GIT_FOLDER"
 	success "todo.txt is installed"
 }
 
@@ -341,6 +334,14 @@ install() {
 		local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
 		multiple_select "Choose the program(s)" "${programs[@]}"
 		selected_programs="${selected[@]}"
+	fi
+	if value_in_array "Spotify" "${selected_programs[@]}"; then
+		while true; do
+			read -p "Please firstly install original spotify on https://www.spotify.com/us/download/linux in another tab, then enter [y/Y] to continue" input
+			if [[ $input == [yY] ]]; then
+				break
+			fi
+		done
 	fi
 
 	if [ ${#selected_installation[@]} -gt 0 ]; then
