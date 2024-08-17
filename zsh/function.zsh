@@ -50,7 +50,7 @@ run_project() {
 
 				open_terminal_run_command $SERVER_TITLE "cd $SERVER_DIR && $SERVER_RUN_COMMAND"
 				open_terminal_run_command $CLIENT_TITLE "cd $CLIENT_DIR && $CLIENT_RUN_COMMAND"
-				open_terminal_run_command $CRAWLER_TITLE "cd $CRAWLER_DIR && $CRAWLER_RUN_COMMAND"
+				open_terminal_run_command $CRAWLER_TITLE "cd $CRAWLER_DIR && source .venv/bin/activate && $CRAWLER_RUN_COMMAND"
 				;;
 			comic)
 				ROOT_DIR="$WORKSPACE/MongoERN_Comic"
