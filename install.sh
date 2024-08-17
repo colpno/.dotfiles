@@ -248,8 +248,8 @@ setup_github_ssh() {
 		eval "$(ssh-agent -s)"
 		ssh-add ~/.ssh/id_ed25519
 
-		info "SSH key: "
-		cat ~/.ssh/id_ed25519.pub
+		xsel --clipboard < ~/.ssh/id_ed25519.pub
+		success "Gibhub SSH key has been copied to clipboard"
 		confirm_before_continuing "Confirm the establishment of Github SSH"
 	} || {
 		error "Failed to generate Github SSH key"
