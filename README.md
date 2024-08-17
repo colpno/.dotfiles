@@ -1,25 +1,3 @@
-## What's in dotfiles?
-
-### Ubuntu
-
-- Install some necessary packages (`git`, `curl`, `tree`, `snapd`, `vim`, `zsh`, `gnome-shell-extensions-manager`, `python3-pip`, `ibus-unikey`)
-- Install some pip packages (`gnome-extensions-cli`)
-- Config profile
-- Config vim
-- Create symlinks
-- Install fonts (`Fira Code`, `Source Code Pro`)
-- Generate ssh key
-- Install some programs (`VSCode`, `Postman`, `OBS Studio`)
-- Install some gnome extensions (`blur-my-shell`, `Vitals`, `toggle-night-light`, `BingWallpaper`, `theme-switcher`)
-- Optionally install Laravel + MySQL
-
-### Windows
-
-- Install terminal
-- Install some apps (`TranslucentTB`)
-
-
-
 ## Installation
 
 ### Ubuntu
