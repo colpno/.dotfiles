@@ -1,5 +1,5 @@
 #!/bin/bash
-APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste"
+APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste-2"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com bluetooth-battery@michalw.github.com"
 CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
@@ -14,6 +14,8 @@ COLOR_RED="\033[1;31m"
 COLOR_PURPLE="\033[1;35m"
 COLOR_YELLOW="\033[1;33m"
 COLOR_NONE="\033[0m"
+
+error_counter=0
 
 title() {
     echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
@@ -91,6 +93,15 @@ multiple_select() {
 	choices=()
 }
 
+confirm_before_continuing() {
+	while true; do
+		read -p "$1 (Enter [y/Y] to continue): " input
+		if [[ $input == [yY] ]]; then
+			break
+		fi
+	done
+}
+
 install_fonts() {
 	title "Installing fonts"
 
@@ -102,12 +113,13 @@ install_fonts() {
 		if which fc-cache >/dev/null 2>&1 ;
 		then
 			fc-cache -fv "$USER_FONT_DIR"
-			source /etc/profile
+			sudo source /etc/profile
 		fi
 
 		success "Fonts are installed"
 	} || {
 		error "Failed to install fonts"
+		error_counter=$((error_counter+1))
 	}
 
 }
@@ -121,6 +133,7 @@ setup_terminal_profile() {
 		success "oh-my-zsh is installed"
 	} || {
 		error "Failed to install oh-my-zsh"
+		error_counter=$((error_counter+1))
 	}
 
 	info "Installing oh-my-zsh's plugins"
@@ -134,6 +147,7 @@ setup_terminal_profile() {
 		done
 	} || {
 		error "Failed to install oh-my-zsh plugins"
+		error_counter=$((error_counter+1))
 	}
 	cd $DOTFILES
 
@@ -143,6 +157,7 @@ setup_terminal_profile() {
 		success "Powerlevel10k is installed"
 	} || {
 		error "Failed to install Powerlevel10k"
+		error_counter=$((error_counter+1))
 	}
 
 	info "Restoring user dconf"
@@ -151,6 +166,7 @@ setup_terminal_profile() {
 		success "User dconf is restored"
 	} || {
 		error "Failed to restore user dconf"
+		error_counter=$((error_counter+1))
 	}
 }
 
@@ -167,6 +183,7 @@ create_symlinks() {
 			success "Symlink of $filename is created"
 		} || {
 			error "Failed to create symlink for $filename"
+			error_counter=$((error_counter+1))
 		}
 	done
 
@@ -178,6 +195,7 @@ create_symlinks() {
 		success "Symlink of todo config is created"
 	} || {
 		error "Failed to create symlink for todotxt config"
+		error_counter=$((error_counter+1))
 	}
 }
 
@@ -194,6 +212,7 @@ install_js_pkg_managers() {
 			success "NVM is installed"
 		} || {
 			error "Failed to install NVM"
+			error_counter=$((error_counter+1))
 		}
 
 		info "Installing NPM"
@@ -202,6 +221,7 @@ install_js_pkg_managers() {
 			success "Latest NPM version is installed"
 		} || {
 			error "Failed to install NPM"
+			error_counter=$((error_counter+1))
 		}
 	fi
 
@@ -215,6 +235,7 @@ install_js_pkg_managers() {
 			success "Latest Yarn version is installed"
 		} || {
 			error "Failed to install Yarn"
+			error_counter=$((error_counter+1))
 		}
 	fi
 }
@@ -229,9 +250,10 @@ setup_github_ssh() {
 
 		info "SSH key: "
 		cat ~/.ssh/id_ed25519.pub
-		read -p "ENTER when done Github SSH establishing"
+		confirm_before_continuing "Confirm the establishment of Github SSH"
 	} || {
 		error "Failed to generate Github SSH key"
+		error_counter=$((error_counter+1))
 	}
 }
 
@@ -248,10 +270,12 @@ install_gnome_extensions() {
 				success "$extension is installed"
 			} || {
 				error "Failed to install $extension"
+				error_counter=$((error_counter+1))
 			}
 		done
 	} || {
 		error "Failed to install gnome-extensions-cli"
+		error_counter=$((error_counter+1))
 	}
 
 }
@@ -275,6 +299,7 @@ install_programs() {
 			success "VS Code is installed"
 		} || {
 			error "Failed to install VS Code"
+			error_counter=$((error_counter+1))
 		}
 	fi
 
@@ -288,6 +313,7 @@ install_programs() {
 			success "OBS Studio is installed"
 		} || {
 			error "Failed to install OBS Studio"
+			error_counter=$((error_counter+1))
 		}
 	fi
 
@@ -299,6 +325,7 @@ install_programs() {
 			success "Postman is installed"
 		} || {
 			error "Failed to install Postman"
+			error_counter=$((error_counter+1))
 		}
 	fi
 
@@ -316,6 +343,7 @@ install_programs() {
 			success "Spotify is installed"
 		} || {
 			error "Failed to install Spotify"
+			error_counter=$((error_counter+1))
 		}
 	fi
 }
@@ -331,6 +359,7 @@ install_apt_pkg() {
 			success  "$package is installed"
 		} || {
 			error "Failed to install $package"
+			error_counter=$((error_counter+1))
 		}
 	done
 
@@ -346,6 +375,7 @@ install_apt_pkg() {
 		success "todotxt is installed"
 	} || {
 		error "Failed to install todotxt"
+		error_counter=$((error_counter+1))
 	}
 }
 
@@ -358,6 +388,7 @@ install_laravel() {
 		success "PHP is installed"
 	} || {
 		error "Failed to install PHP"
+		error_counter=$((error_counter+1))
 	}
 
 	info "Installing Composer"
@@ -366,6 +397,7 @@ install_laravel() {
 		success "Composer is installed"
 	} || {
 		error "Failed to install Composer"
+		error_counter=$((error_counter+1))
 	}
 
 	info "Installing MySQL"
@@ -374,6 +406,7 @@ install_laravel() {
 		success "MySQL is installed"
 	} || {
 		error "Failed to install MySQL"
+		error_counter=$((error_counter+1))
 	}
 }
 
@@ -387,6 +420,7 @@ clean_up() {
 			sudo apt remove --purge -y "$package"
 		} || {
 			error "Failed to uninstall $package"
+			error_counter=$((error_counter+1))
 		}
 	done
 
@@ -428,12 +462,8 @@ install() {
 		selected_programs="${selected[@]}"
 	fi
 	if value_in_array "Spotify" "${selected_programs[@]}"; then
-		while true; do
-			read -p "Please firstly install original spotify on https://www.spotify.com/us/download/linux in another tab, then enter [y/Y] to continue" input
-			if [[ $input == [yY] ]]; then
-				break
-			fi
-		done
+		clear
+		confirm_before_continuing "Please firstly install original spotify on https://www.spotify.com/us/download/linux in another tab"
 	fi
 
 	if [ ${#selected_installation[@]} -gt 0 ]; then
@@ -451,6 +481,8 @@ install() {
 	if value_in_array "$installation_install_laravel" "${selected_installation[@]}"; then install_laravel; fi
 	if value_in_array "$installation_create_symlinks" "${selected_installation[@]}"; then create_symlinks; fi
 	if value_in_array "$installation_clean_up" "${selected_installation[@]}"; then clean_up; fi
+
+	info "The number of errors: $error_counter"
 	if value_in_array "$installation_setup_terminal" "${selected_installation[@]}"; then chsh -s /usr/bin/zsh && zsh; fi
 }
 
