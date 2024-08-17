@@ -11,8 +11,10 @@ cd ~/.dotfiles && ./install.sh
 
 #### NOTE:
 After the installation, do the following:
-1. Restart (Reboot) the system 
-1. Change **Keyboard input method system** to **none** in **Language Support**
+1. Restart (Reboot) the system
+```bash
+sudo reboot
+```
 
 ### Windows
 
@@ -29,3 +31,4 @@ After the installation, do the following:
 - [ohmyzsh](https://github.com/ohmyzsh/ohmyzsh)
 - [ohmyposh](https://ohmyposh.dev/docs)
 - [Install MySQL on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04)
+- [Install Visual Studio Code on Linux](https://code.visualstudio.com/docs/setup/linux#_installation)
