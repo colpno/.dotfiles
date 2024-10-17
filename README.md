@@ -14,6 +14,7 @@
 	- [Vim](#vim-1)
 	- [Dconf](#dconf)
 	- [Todo.txt](#todotxt-1)
+- [Troubleshooting](#troubleshooting)
 - [Acknowledgments](#acknowledgments)
 
 
@@ -139,9 +140,86 @@ Read inline comments in `config` file.
 
 
 
+## Troubleshooting
+
+### Wireless keyboard function keys
+
+#### Description
+
+The function keys work without pressing <kbd>Fn</kbd>. And it makes the original keys not functioning as usual.
+
+#### Example
+
+- Assign <kbd>F12</kbd> with increase volume.
+- Pressing <kbd>Fn</kbd> and <kbd>F12</kbd>.
+- Volume is increased instead.
+
+#### Expected behavior
+
+Function keys only work by pressing with <kbd>Fn</kbd>.
+
+#### Solve
+
+There are 2 ways:
+
+#### Run a command
+
+```sh
+echo 0 | sudo tee /sys/module/hid_apple/parameters/fnmode
+```
+
+The inconvenient is that you will have to re-run the command every time you reboot.  
+If you want to avoid this issue, please follow the [next way](#create-a-service-to-run-the-command).
+
+#### Create a service to run the command
+
+Create a new service file:
+
+```sh
+sudo vim /etc/systemd/system/fnmode.service
+```
+
+Add the following content to the file:
+
+```sh
+[Unit]
+Description=Set fnmode for hid_apple
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 0 | tee /sys/module/hid_apple/parameters/fnmode'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Save and close the file.
+
+Reload the systemd daemon to recognize the new service:
+
+```sh
+sudo systemctl daemon-reload
+```
+
+Enable the service to run at startup:
+
+```sh
+sudo systemctl enable fnmode.service
+```
+
+Start the service immediately:
+
+```sh
+sudo systemctl start fnmode.service
+```
+
+
+
 ## Acknowledgments
 
 - [Add custom keybindings](https://techwiser.com/custom-keyboard-shortcuts-ubuntu/)
 - [Linux terminal theme](https://github.com/ohmyzsh/ohmyzsh)
 - [Window terminal theme](https://ohmyposh.dev/docs)
 - [Install Visual Studio Code on Linux](https://code.visualstudio.com/docs/setup/linux#_installation)
+- [Fix keyboard function keys work without pressing Fn key on Ubuntu](https://askubuntu.com/a/1194871)
