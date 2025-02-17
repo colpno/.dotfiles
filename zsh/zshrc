@@ -124,7 +124,7 @@ source $ZSH/oh-my-zsh.sh
 
 DOTFILE_DIR="$HOME/.dotfiles"
 source "$DOTFILE_DIR/zsh/alias.zsh"
-source "$DOTFILE_DIR/zsh/autostart.zsh"
+source "$DOTFILE_DIR/zsh/startup.zsh"
 
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -146,3 +146,5 @@ znap source zsh-users/zsh-syntax-highlighting
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' file-sort date
 
+
+PATH=~/.console-ninja/.bin:$PATH
