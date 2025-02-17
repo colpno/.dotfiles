@@ -471,6 +471,7 @@ install() {
 		sudo apt update
 	fi
 
+	if value_in_array "$installation_create_symlinks" "${selected_installation[@]}"; then create_symlinks; fi
 	if value_in_array "$installation_github_ssh" "${selected_installation[@]}"; then setup_github_ssh; fi
 	if value_in_array "$installation_install_fonts" "${selected_installation[@]}"; then install_fonts; fi
 	if value_in_array "$installation_install_apt_pkgs" "${selected_installation[@]}"; then install_apt_pkg; fi
@@ -479,7 +480,6 @@ install() {
 	if value_in_array "$installation_install_programs" "${selected_installation[@]}"; then install_programs "${selected_programs[@]}"; fi
 	if value_in_array "$installation_setup_terminal" "${selected_installation[@]}"; then setup_terminal_profile; fi
 	if value_in_array "$installation_install_laravel" "${selected_installation[@]}"; then install_laravel; fi
-	if value_in_array "$installation_create_symlinks" "${selected_installation[@]}"; then create_symlinks; fi
 	if value_in_array "$installation_clean_up" "${selected_installation[@]}"; then clean_up; fi
 
 	info "The number of errors: $error_counter"
