@@ -2,7 +2,7 @@
 Type=Application
 Name=Spotify (adblock)
 GenericName=Music Player
-Icon=spotify-client
+Icon=/snap/spotify/83/usr/share/spotify/icons/spotify-linux-128.png
 TryExec=spotify
 Exec=env LD_PRELOAD=/usr/local/lib/spotify-adblock.so spotify %U
 Terminal=false

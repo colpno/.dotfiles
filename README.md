@@ -225,3 +225,20 @@ sudo systemctl start fnmode.service
 - [Fix keyboard function keys work without pressing Fn key on Ubuntu](https://askubuntu.com/a/1194871)
 - [Interact with dconf settings](https://askubuntu.com/questions/984205/how-to-save-gnome-settings-in-a-file)
 - [Dual boot Windows and Ubuntu instruction](https://www.youtube.com/watch?v=lGR_VNwUfzk&list=PLWMFYxNitOVEX9u0ZNspjcmdyWmy7BCp8&index=1&t=658s)
+- Path to where the original Spotify locates: `/var/lib/snapd/desktop/applications`
+
+```spotify_spotify.desktop
+[Desktop Entry]
+X-SnapInstanceName=spotify
+Type=Application
+Name=Spotify
+GenericName=Music Player
+Icon=/snap/spotify/83/usr/share/spotify/icons/spotify-linux-128.png
+X-SnapAppName=spotify
+Exec=env BAMF_DESKTOP_FILE_HINT=/var/lib/snapd/desktop/applications/spotify_spotify.desktop /snap/bin/spotify %U
+Terminal=false
+MimeType=x-scheme-handler/spotify;
+Categories=Audio;Music;Player;AudioVideo;
+StartupWMClass=spotify
+```
+
