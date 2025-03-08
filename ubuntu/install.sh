@@ -1,11 +1,16 @@
 #!/bin/bash
+
+DOTFILES="$(pwd)"
+FONT_USER_DIR="/usr/share/fonts"
+TODOTXT_DIR="$HOME/.todo"
+TODOTXT_GIT_FOLDER="$TODOTXT_DIR/git-folder"
+
 APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste-2"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com bluetooth-battery@michalw.github.com"
 CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
 
-SYMLINKS_HOME="vim/vimrc zsh/zshrc zsh/p10k.zsh git/gitconfig"
-DOTFILES="$(pwd)"
+SYMLINKS_HOME="vimrc zsh/zshrc zsh/p10k.zsh gitconfig"
 
 COLOR_GRAY="\033[1;38;5;243m"
 COLOR_BLUE="\033[1;34m"
@@ -72,6 +77,7 @@ multiple_select() {
     }
 
     local prompt="$question (again to uncheck, ENTER when done): "
+
     while menu && read -rp "$prompt" num && [[ "$num" ]]; do
         case $num in
             q|Q) 
@@ -96,6 +102,7 @@ multiple_select() {
 confirm_before_continuing() {
 	while true; do
 		read -p "$1 (Enter [y/Y] to continue): " input
+
 		if [[ $input == [yY] ]]; then
 			break
 		fi
@@ -105,14 +112,12 @@ confirm_before_continuing() {
 install_fonts() {
 	title "Installing fonts"
 
-	local FONT_DIR="/usr/share/fonts"
-
 	{
-		sudo find "$DOTFILES/fonts" -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_DIR/" \;
+		sudo find "$DOTFILES/fonts" -name "*.[ot]tf" -type f -exec cp -v {} "$FONT_USER_DIR/" \;
 
 		if which fc-cache >/dev/null 2>&1 ;
 		then
-			fc-cache -fv "$USER_FONT_DIR"
+			fc-cache -fv "$FONT_USER_DIR"
 			sudo source /etc/profile
 		fi
 
@@ -191,7 +196,7 @@ create_symlinks() {
 		info "Creating symlink for todotxt config"
 		rm -rfv ~/.todo
 		create_dir_if_not_exist ~/.todo
-		ln -svf "$DOTFILES/todotxt/config" ~/.todo/config
+		ln -svf "$DOTFILES/todotxtconfig" ~/.todo/config
 		success "Symlink of todo config is created"
 	} || {
 		error "Failed to create symlink for todotxt config"
@@ -368,13 +373,11 @@ install_apt_pkg() {
 
 	title "Installing todotxt"
 	{
-		local DIR="$HOME/.todo"
-		local GIT_FOLDER="$DIR/git-folder"
-		create_dir_if_not_exist "$DIR"
-		create_dir_if_not_exist "$GIT_FOLDER"
-		git clone --depth=1 git@github.com:todotxt/todo.txt-cli.git "$GIT_FOLDER"
-		cd "$GIT_FOLDER" && make && sudo make install CONFIG_DIR=$DIR
-		rm -rfv "$GIT_FOLDER"
+		create_dir_if_not_exist "$TODOTXT_DIR"
+		create_dir_if_not_exist "$TODOTXT_GIT_FOLDER"
+		git clone --depth=1 git@github.com:todotxt/todo.txt-cli.git "$TODOTXT_GIT_FOLDER"
+		cd "$TODOTXT_GIT_FOLDER" && make && sudo make install CONFIG_DIR=$TODOTXT_DIR
+		rm -rfv "$TODOTXT_GIT_FOLDER"
 		success "todotxt is installed"
 	} || {
 		error "Failed to install todotxt"

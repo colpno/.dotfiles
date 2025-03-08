@@ -27,7 +27,7 @@
 sudo apt update
 sudo apt install git -y
 git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles
-cd ~/.dotfiles && ./install.sh
+cd ~/.dotfiles/ubuntu && ./install.sh
 ```
 
 > After the installation, restart the system to get it working:
@@ -39,7 +39,7 @@ cd ~/.dotfiles && ./install.sh
 
 1. Install [git](https://git-scm.com/download/win)
 1. `git clone https://github.com/colpno/.dotfiles.git ~/.dotfiles`
-1. `cd ~/.dotfiles`
+1. `cd ~/.dotfiles/windows`
 1. Run `install.bat`
 
 
