@@ -258,6 +258,8 @@ setup_github_ssh() {
 		xsel --clipboard < ~/.ssh/id_ed25519.pub
 		success "Gibhub SSH key has been copied to clipboard"
 		confirm_before_continuing "Confirm the establishment of Github SSH"
+
+		git remote set-url origin git@github.com:colpno/.dotfiles.git
 	} || {
 		error "Failed to generate Github SSH key"
 		error_counter=$((error_counter+1))
