@@ -346,8 +346,8 @@ install_programs() {
 
 			if [ $? -eq 0 ]; then
 				cd spotify-adblock && make && sudo make install && cd ../ && rm -rf spotify-adblock
-			else
-				cd archive/spotify-adblock && make && sudo make install && cd "$DOTFILES"
+			#else
+				#cd archive/spotify-adblock && make && sudo make install && cd "$DOTFILES"
 			fi
 
 			ln -svf "$DOTFILES/spotify-adblock.desktop" ~/.local/share/applications/
