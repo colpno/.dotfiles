@@ -23,25 +23,25 @@ COLOR_NONE="\033[0m"
 error_counter=0
 
 title() {
-    echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
-    echo -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
+	echo -e "\n${COLOR_PURPLE}$1${COLOR_NONE}"
+	echo -e "${COLOR_GRAY}==============================${COLOR_NONE}\n"
 }
 
 error() {
-    echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
-    exit 1
+	echo -e "${COLOR_RED}Error: ${COLOR_NONE}$1"
+	exit 1
 }
 
 warning() {
-    echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
+	echo -e "${COLOR_YELLOW}Warning: ${COLOR_NONE}$1"
 }
 
 info() {
-    echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
+	echo -e "${COLOR_BLUE}Info: ${COLOR_NONE}$1"
 }
 
 success() {
-    echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
+	echo -e "${COLOR_GREEN}$1${COLOR_NONE}"
 }
 
 create_dir_if_not_exist() {
@@ -54,46 +54,48 @@ create_dir_if_not_exist() {
 }
 
 value_in_array() {
-    local match="$1"
-    shift
-    for e; do
-        [[ $e == *"$match"* ]] && return 0
-    done
-    return 1
+	local match="$1"
+	shift
+
+	for e; do
+		[[ $e == *"$match"* ]] && return 0
+	done
+
+	return 1
 }
 
 multiple_select() {
 	local question="$1"
 	shift
-    local options=("$@")
-    selected=()
+	local options=("$@")
+	selected=()
 
-    menu() {
+	menu() {
 		clear
-        for i in ${!options[@]}; do
-            printf "%3d[%s] %s\n" $((i+1)) "${choices[i]:- }" "${options[i]}"
-        done
-        [[ "$msg" ]] && echo "$msg"; :
-    }
+		for i in ${!options[@]}; do
+			printf "%3d[%s] %s\n" $((i+1)) "${choices[i]:- }" "${options[i]}"
+		done
+			[[ "$msg" ]] && echo "$msg"; :
+	}
 
-    local prompt="$question (again to uncheck, ENTER when done): "
+	local prompt="$question (again to uncheck, ENTER when done): "
 
-    while menu && read -rp "$prompt" num && [[ "$num" ]]; do
-        case $num in
-            q|Q) 
-				selected=()
-				break ;;
-        esac
-        [[ "$num" != *[![:digit:]]* ]] &&
-        (( num > 0 && num <= ${#options[@]} )) ||
-        { msg="Invalid option: $num"; continue; }
-        ((num--)); msg=""
-        [[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
-    done
+	while menu && read -rp "$prompt" num && [[ "$num" ]]; do
+	case $num in
+		q|Q) 
+			selected=()
+			break ;;
+	esac
+		[[ "$num" != *[![:digit:]]* ]] &&
+		(( num > 0 && num <= ${#options[@]} )) ||
+		{ msg="Invalid option: $num"; continue; }
+		((num--)); msg=""
+		[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
+	done
 
-    for i in ${!options[@]}; do
-        [[ "${choices[i]}" ]] && selected+=("${options[i]}")
-    done
+	for i in ${!options[@]}; do
+		[[ "${choices[i]}" ]] && selected+=("${options[i]}")
+	done
 
 	options=()
 	choices=()
