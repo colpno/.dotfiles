@@ -7,7 +7,7 @@ TODOTXT_GIT_FOLDER="$TODOTXT_DIR/git-folder"
 
 APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste-2"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
-GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com bluetooth-battery@michalw.github.com"
+GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com Bluetooth-Battery-Meter@maniacx.github.com clipboard-history@alexsaveau.dev"
 CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
 
 SYMLINKS_HOME="vimrc zsh/zshrc zsh/p10k.zsh gitconfig"
@@ -350,7 +350,9 @@ install_programs() {
 				cd archive/spotify-adblock && make && sudo make install && cd "$DOTFILES"
 			fi
 
-			cp spotify-adblock.desktop ~/.local/share/applications
+			ln -svf "$DOTFILES/spotify-adblock.desktop" ~/.local/share/applications/
+
+			rm -rf spotify-adblock
 
 			success "Spotify is installed"
 		} || {
