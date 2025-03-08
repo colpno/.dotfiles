@@ -167,14 +167,14 @@ setup_terminal_profile() {
 		error_counter=$((error_counter+1))
 	}
 
-	#info "Restoring user dconf"
-	#{
-		#dconf load / < ${DOTFILES}/gnome-terminal/user.dconf
-		#success "User dconf is restored"
-	#} || {
-		#error "Failed to restore user dconf"
-		#error_counter=$((error_counter+1))
-	#}
+	info "Restoring dconf settings"
+	{
+		dconf load / < ${DOTFILES}/gnome-terminal/dconf-settings.ini
+		success "User dconf is restored"
+	} || {
+		error "Failed to restore user dconf"
+		error_counter=$((error_counter+1))
+	}
 }
 
 create_symlinks() {
