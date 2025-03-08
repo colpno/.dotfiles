@@ -376,8 +376,11 @@ install_apt_pkg() {
 			error_counter=$((error_counter+1))
 		}
 	done
+}
 
+install_todotxt() {
 	title "Installing todotxt"
+
 	{
 		create_dir_if_not_exist "$TODOTXT_DIR"
 		create_dir_if_not_exist "$TODOTXT_GIT_FOLDER"
@@ -391,35 +394,44 @@ install_apt_pkg() {
 	}
 }
 
-install_laravel() {
-	title "Installing Laravel"
+install_php() {
+	local apps=("$@")
 
-	info "Installing PHP"
-	{
-		sudo apt install -y php php-common php-cli php-gd php-mysqlnd php-curl php-intl php-mbstring php-bcmath php-xml php-zip
-		success "PHP is installed"
-	} || {
-		error "Failed to install PHP"
-		error_counter=$((error_counter+1))
-	}
+	if [[ "${apps[@]}" =~ "PHP" ]]; then
+	then
+		info "Installing PHP"
+		{
+			sudo apt install -y php php-common php-cli php-gd php-mysqlnd php-curl php-intl php-mbstring php-bcmath php-xml php-zip
+			success "PHP is installed"
+		} || {
+			error "Failed to install PHP"
+			error_counter=$((error_counter+1))
+		}
+	fi
 
-	info "Installing Composer"
-	{
-		curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
-		success "Composer is installed"
-	} || {
-		error "Failed to install Composer"
-		error_counter=$((error_counter+1))
-	}
+	if [[ "${apps[@]}" =~ "Composer" ]]; then
+	then
+		info "Installing Composer"
+		{
+			curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+			success "Composer is installed"
+		} || {
+			error "Failed to install Composer"
+			error_counter=$((error_counter+1))
+		}
+	fi
 
-	info "Installing MySQL"
-	{
-		sudo apt install -y mysql-server
-		success "MySQL is installed"
-	} || {
-		error "Failed to install MySQL"
-		error_counter=$((error_counter+1))
-	}
+	if [[ "${apps[@]}" =~ "MySQL" ]]; then
+	then
+		info "Installing MySQL"
+		{
+			sudo apt install -y mysql-server
+			success "MySQL is installed"
+		} || {
+			error "Failed to install MySQL"
+			error_counter=$((error_counter+1))
+		}
+	fi
 }
 
 clean_up() {
@@ -445,6 +457,7 @@ install() {
 	local selected_pkg_mngrs=()
 	local selected_programs=()
 	local selected_installation=()
+	local selected_php_apps=()
 
 	# options to choose what to install
 	local installation_setup_terminal="Setup terminal"
@@ -455,22 +468,29 @@ install() {
 	local installation_install_js_pkg_mng="Install Javascript package managers"
 	local installation_install_gnome_exts="Install gnome extensions"
 	local installation_install_programs="Install programs"
-	local installation_install_laravel="Install Laravel"
+	local installation_install_php="Install PHP"
+	local installation_install_todotxt="Install Todo.txt"
 	local installation_clean_up="Clean up"
 
-	local installation=("$installation_setup_terminal" "$installation_github_ssh" "$installation_create_symlinks" "$installation_install_fonts" "$installation_install_apt_pkgs" "$installation_install_js_pkg_mng" "$installation_install_gnome_exts" "$installation_install_programs" "$installation_install_laravel" "$installation_clean_up")
+	local installation=("$installation_setup_terminal" "$installation_github_ssh" "$installation_create_symlinks" "$installation_install_fonts" "$installation_install_apt_pkgs" "$installation_install_js_pkg_mng" "$installation_install_todotxt" "$installation_install_gnome_exts" "$installation_install_programs" "$installation_install_php" "$installation_clean_up")
 	multiple_select "Choose what to install" "${installation[@]}"
 	selected_installation="${selected[@]}"
 
 	if value_in_array "$installation_install_js_pkg_mng" "${selected_installation[@]}"; then
 		local pkg_mngrs=("npm" "yarn")
-		multiple_select "Choose the package manager(s)" "${pkg_mngrs[@]}"
+		multiple_select "Choose package manager(s)" "${pkg_mngrs[@]}"
 		selected_pkg_mngrs="${selected[@]}"
+	fi
+
+	if value_in_array "$installation_install_js_pkg_mng" "${selected_installation[@]}"; then
+		local phps=("PHP" "Composer" "MySQL")
+		multiple_select "Choose php application(s)" "${phps[@]}"
+		selected_php_apps="${selected[@]}"
 	fi
 
 	if value_in_array "$installation_install_programs" "${selected_installation[@]}"; then
 		local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
-		multiple_select "Choose the program(s)" "${programs[@]}"
+		multiple_select "Choose program(s)" "${programs[@]}"
 		selected_programs="${selected[@]}"
 	fi
 	if value_in_array "Spotify" "${selected_programs[@]}"; then
@@ -483,15 +503,16 @@ install() {
 		sudo apt update
 	fi
 
+	if value_in_array "$installation_install_apt_pkgs" "${selected_installation[@]}"; then install_apt_pkg; fi
 	if value_in_array "$installation_create_symlinks" "${selected_installation[@]}"; then create_symlinks; fi
 	if value_in_array "$installation_github_ssh" "${selected_installation[@]}"; then setup_github_ssh; fi
 	if value_in_array "$installation_install_fonts" "${selected_installation[@]}"; then install_fonts; fi
-	if value_in_array "$installation_install_apt_pkgs" "${selected_installation[@]}"; then install_apt_pkg; fi
 	if value_in_array "$installation_install_js_pkg_mng" "${selected_installation[@]}"; then install_js_pkg_managers "${selected_pkg_mngrs[@]}"; fi
+	if value_in_array "$installation_install_todotxt" "${selected_installation[@]}"; then install_todotxt; fi
 	if value_in_array "$installation_install_gnome_exts" "${selected_installation[@]}"; then install_gnome_extensions; fi
 	if value_in_array "$installation_install_programs" "${selected_installation[@]}"; then install_programs "${selected_programs[@]}"; fi
 	if value_in_array "$installation_setup_terminal" "${selected_installation[@]}"; then setup_terminal_profile; fi
-	if value_in_array "$installation_install_laravel" "${selected_installation[@]}"; then install_laravel; fi
+	if value_in_array "$installation_install_php" "${selected_installation[@]}"; then install_php "${selected_php_apps[@]}"; fi
 	if value_in_array "$installation_clean_up" "${selected_installation[@]}"; then clean_up; fi
 
 	info "The number of errors: $error_counter"
