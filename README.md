@@ -223,3 +223,5 @@ sudo systemctl start fnmode.service
 - [Window terminal theme](https://ohmyposh.dev/docs)
 - [Install Visual Studio Code on Linux](https://code.visualstudio.com/docs/setup/linux#_installation)
 - [Fix keyboard function keys work without pressing Fn key on Ubuntu](https://askubuntu.com/a/1194871)
+- [Interact with dconf settings](https://askubuntu.com/questions/984205/how-to-save-gnome-settings-in-a-file)
+- [Dual boot Windows and Ubuntu instruction](https://www.youtube.com/watch?v=lGR_VNwUfzk&list=PLWMFYxNitOVEX9u0ZNspjcmdyWmy7BCp8&index=1&t=658s)
