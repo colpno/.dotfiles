@@ -333,12 +333,15 @@ install_programs() {
 		info "Installing Spotify"
 
 		{
-			git clone --depth=1 https://github.com/abba23/spotify-adblock.git
+			git clone https://github.com/abba23/spotify-adblock.git
+
 			if [ $? -eq 0 ]; then
 				cd spotify-adblock && make && sudo make install && cd ../ && rm -rf spotify-adblock
 			else
 				cd archive/spotify-adblock && make && sudo make install && cd "$DOTFILES"
 			fi
+
+			cp spotify-adblock.desktop ~/.local/share/applications
 
 			success "Spotify is installed"
 		} || {
