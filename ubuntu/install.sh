@@ -397,7 +397,7 @@ install_todotxt() {
 install_php() {
 	local apps=("$@")
 
-	if [[ "${apps[@]}" =~ "PHP" ]]; then
+	if [[ "${apps[@]}" =~ "PHP" ]];
 	then
 		info "Installing PHP"
 		{
@@ -409,7 +409,7 @@ install_php() {
 		}
 	fi
 
-	if [[ "${apps[@]}" =~ "Composer" ]]; then
+	if [[ "${apps[@]}" =~ "Composer" ]];
 	then
 		info "Installing Composer"
 		{
@@ -421,7 +421,7 @@ install_php() {
 		}
 	fi
 
-	if [[ "${apps[@]}" =~ "MySQL" ]]; then
+	if [[ "${apps[@]}" =~ "MySQL" ]];
 	then
 		info "Installing MySQL"
 		{
