@@ -342,17 +342,16 @@ install_programs() {
 		info "Installing Spotify"
 
 		{
-			git clone https://github.com/abba23/spotify-adblock.git
+			curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+			echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 
 			if [ $? -eq 0 ]; then
-				cd spotify-adblock && make && sudo make install && cd ../ && rm -rf spotify-adblock
-			#else
-				#cd archive/spotify-adblock && make && sudo make install && cd "$DOTFILES"
+				sudo apt-get update && sudo apt-get install spotify-client
+
+				if [ $? -eq 0 ]; then
+					bash <(curl -sSL https://spotx-official.github.io/run.sh)
+				fi
 			fi
-
-			ln -svf "$DOTFILES/spotify-adblock.desktop" ~/.local/share/applications/
-
-			rm -rf spotify-adblock
 
 			success "Spotify is installed"
 		} || {
@@ -492,10 +491,6 @@ install() {
 		local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
 		multiple_select "Choose program(s)" "${programs[@]}"
 		selected_programs="${selected[@]}"
-	fi
-	if value_in_array "Spotify" "${selected_programs[@]}"; then
-		clear
-		confirm_before_continuing "Please firstly install original spotify on https://www.spotify.com/us/download/linux in another tab"
 	fi
 
 	if [ ${#selected_installation[@]} -gt 0 ]; then
