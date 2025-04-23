@@ -7,7 +7,7 @@ TODOTXT_GIT_FOLDER="$TODOTXT_DIR/git-folder"
 
 APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste-2"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
-GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com Bluetooth-Battery-Meter@maniacx.github.com clipboard-history@alexsaveau.dev"
+GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com Bluetooth-Battery-Meter@maniacx.github.com clipboard-history@alexsaveau.dev cloudflare-warp-toggle@khaled.is-a.dev"
 CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
 
 SYMLINKS_HOME="vimrc zsh/zshrc zsh/p10k.zsh gitconfig"
@@ -204,6 +204,13 @@ create_symlinks() {
 		error "Failed to create symlink for todotxt config"
 		error_counter=$((error_counter+1))
 	}
+}
+
+install_cloudflare() {
+	curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+	echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+	sudo apt-get update && sudo apt-get install cloudflare-warp
+	warp-cli registration new
 }
 
 install_js_pkg_managers() {
@@ -469,9 +476,10 @@ install() {
 	local installation_install_programs="Install programs"
 	local installation_install_php="Install PHP"
 	local installation_install_todotxt="Install Todo.txt"
+	local installation_install_cloudflare="Install Cloudflare 1.1.1.1"
 	local installation_clean_up="Clean up"
 
-	local installation=("$installation_setup_terminal" "$installation_github_ssh" "$installation_create_symlinks" "$installation_install_fonts" "$installation_install_apt_pkgs" "$installation_install_js_pkg_mng" "$installation_install_todotxt" "$installation_install_gnome_exts" "$installation_install_programs" "$installation_install_php" "$installation_clean_up")
+	local installation=("$installation_setup_terminal" "$installation_github_ssh" "$installation_create_symlinks" "$installation_install_fonts" "$installation_install_apt_pkgs" "$installation_install_js_pkg_mng" "$installation_install_todotxt" "$installation_install_gnome_exts" "$installation_install_programs" "$installation_install_php" "$installation_install_cloudflare" "$installation_clean_up")
 	multiple_select "Choose what to install" "${installation[@]}"
 	selected_installation="${selected[@]}"
 
@@ -508,6 +516,7 @@ install() {
 	if value_in_array "$installation_install_programs" "${selected_installation[@]}"; then install_programs "${selected_programs[@]}"; fi
 	if value_in_array "$installation_setup_terminal" "${selected_installation[@]}"; then setup_terminal_profile; fi
 	if value_in_array "$installation_install_php" "${selected_installation[@]}"; then install_php "${selected_php_apps[@]}"; fi
+	if value_in_array "$installation_install_cloudflare" "${selected_installation[@]}"; then install_cloudflare; fi
 	if value_in_array "$installation_clean_up" "${selected_installation[@]}"; then clean_up; fi
 
 	info "The number of errors: $error_counter"
