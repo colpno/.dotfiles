@@ -38,6 +38,7 @@
     #context                 # user@hostname
     dir                     # current directory
     vcs                     # git status
+    todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
     # =========================[ Line #2 ]=========================
     newline                 # \n
     prompt_char           # prompt symbol
@@ -50,7 +51,7 @@
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
     # status                  # exit code of the last command
-    command_execution_time  # duration of the last command
+    # command_execution_time  # duration of the last command
     # background_jobs         # presence of background jobs
     # direnv                  # direnv status (https://direnv.net/)
     # asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
@@ -883,7 +884,7 @@
 
   ################[ todo: todo items (https://github.com/todotxt/todo.txt-cli) ]################
   # Todo color.
-  typeset -g POWERLEVEL9K_TODO_FOREGROUND=0
+  typeset -g POWERLEVEL9K_TODO_FOREGROUND=254
   typeset -g POWERLEVEL9K_TODO_BACKGROUND=8
   # Hide todo when the total number of tasks is zero.
   typeset -g POWERLEVEL9K_TODO_HIDE_ZERO_TOTAL=true
@@ -1771,7 +1772,7 @@
   typeset -g POWERLEVEL9K_TIME_FOREGROUND=0
   typeset -g POWERLEVEL9K_TIME_BACKGROUND=7
   # Format for the current time: 09:51:02. See `man 3 strftime`.
-  typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%I:%M:%S %p}'
+  typeset -g POWERLEVEL9K_TIME_FORMAT='%D{%H:%M:%S}'
   # If set to true, time will update when you hit enter. This way prompts for the past
   # commands will contain the start times of their commands as opposed to the default
   # behavior where they contain the end times of their preceding commands.
@@ -1822,7 +1823,7 @@
   #   - always:   Trim down prompt when accepting a command line.
   #   - same-dir: Trim down prompt when accepting a command line unless this is the first command
   #               typed after changing current working directory.
-  typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=off
+  typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=same-dir
 
   # Instant prompt mode.
   #
