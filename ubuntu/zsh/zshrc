@@ -86,6 +86,7 @@ plugins=(
 	sudo
 	z
 	zsh-autocomplete
+	per-directory-history
 )
 
 # This will check for updates every 30 days
