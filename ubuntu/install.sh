@@ -5,7 +5,7 @@ FONT_USER_DIR="/usr/share/fonts"
 TODOTXT_DIR="$HOME/.todo"
 TODOTXT_GIT_FOLDER="$TODOTXT_DIR/git-folder"
 
-APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste-2"
+APT_PACKAGES="git curl tree snapd vim zsh gnome-shell-extension-manager pipx ibus-unikey make cargo gpg apt-transport-https xsel wl-clipboard gpaste-2 nautilus"
 ZSH_PLUGINS="https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions https://github.com/marlonrichert/zsh-autocomplete.git"
 GNOME_EXTENSIONS="blur-my-shell@aunetx BingWallpaper@ineffable-gmail.com Vitals@CoreCoding.com Bluetooth-Battery-Meter@maniacx.github.com clipboard-history@alexsaveau.dev cloudflare-warp-toggle@khaled.is-a.dev"
 CLEAN_UP_APT_PACKAGES="make cargo gpg apt-transport-https"
