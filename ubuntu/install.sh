@@ -333,18 +333,6 @@ install_programs() {
 		}
 	fi
 
-	if [[ "${programs[@]}" =~ "Postman" ]]; then
-		info "Installing Postman"
-
-		{
-			sudo snap install postman
-			success "Postman is installed"
-		} || {
-			error "Failed to install Postman"
-			error_counter=$((error_counter+1))
-		}
-	fi
-
 	if [[ "${programs[@]}" =~ "Spotify" ]]; then
 		info "Installing Spotify"
 
@@ -353,6 +341,7 @@ install_programs() {
 			echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 
 			if [ $? -eq 0 ]; then
+				sudo apt-get remove spotify-client -y
 				sudo apt-get update && sudo apt-get install spotify-client
 
 				if [ $? -eq 0 ]; then
@@ -496,7 +485,7 @@ install() {
 	fi
 
 	if value_in_array "$installation_install_programs" "${selected_installation[@]}"; then
-		local programs=("VS Code" "OBS Studio" "Postman" "Spotify")
+		local programs=("VS Code" "OBS Studio" "Spotify")
 		multiple_select "Choose program(s)" "${programs[@]}"
 		selected_programs="${selected[@]}"
 	fi
