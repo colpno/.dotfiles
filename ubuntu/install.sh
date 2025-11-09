@@ -478,7 +478,7 @@ install() {
 		selected_pkg_mngrs="${selected[@]}"
 	fi
 
-	if value_in_array "$installation_install_js_pkg_mng" "${selected_installation[@]}"; then
+	if value_in_array "$installation_install_php" "${selected_installation[@]}"; then
 		local phps=("PHP" "Composer" "MySQL")
 		multiple_select "Choose php application(s)" "${phps[@]}"
 		selected_php_apps="${selected[@]}"
